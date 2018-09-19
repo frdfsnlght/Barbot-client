@@ -43,7 +43,8 @@ export default {
             console.log('destroyed glasses')
         },
         
-        SOCKET_GLASSSAVED(state, item) {
+        //SOCKET_GLASSSAVED(state, item) {
+        socket_glassSaved(state, item) {
             if (! state.loaded) return
             let g = state.items.find((e) => { return e.id === item.id })
             if (g) {
@@ -57,7 +58,8 @@ export default {
             }
         },
 
-        SOCKET_GLASSDELETED(state, item) {
+        //SOCKET_GLASSDELETED(state, item) {
+        socket_glassDeleted(state, item) {
             if (! state.loaded) return
             let g = state.items.find((e) => { return e.id === item.id })
             if (g) {

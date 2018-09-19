@@ -11,7 +11,13 @@ import './assets/custom.css'
 
 Vue.config.productionTip = false
 
-Vue.use(VueSocketio, io('http://localhost:8081'), {store});
+Vue.use(VueSocketio, io('http://localhost:8081'), {
+        store,
+        actionPrefix: 'socket_',
+        eventToActionTransformer: (ev) => { return ev },
+        mutationPrefix: 'socket_',
+        eventToMutationTransformer: (ev) => { return ev },
+        });
 
 new Vue({
   router,

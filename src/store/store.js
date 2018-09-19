@@ -21,10 +21,12 @@ export default new Vuex.Store({
     },
     
     mutations: {
-        SOCKET_CONNECT: (state) => {
+        //SOCKET_CONNECT: (state) => {
+        socket_connect: (state) => {
             state.connected = true
         },
-        SOCKET_DISCONNECT: (state) => {
+        //SOCKET_DISCONNECT: (state) => {
+        socket_disconnect: (state) => {
             state.connected = false
         },
         
