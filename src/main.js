@@ -7,11 +7,16 @@ import store from './store/store'
 import VueSocketio from 'vue-socket.io-extended';
 import io from 'socket.io-client';
 
+import 'material-design-icons/iconfont/material-icons.css'
+import 'typeface-roboto/index.css'
+
 import './assets/custom.css'
 
-Vue.config.productionTip = false
+var loc = location.href
+if (process.env.NODE_ENV === 'development')
+    loc = 'http://localhost:8080'
 
-Vue.use(VueSocketio, io('http://localhost:8081'), {
+Vue.use(VueSocketio, io(loc), {
         store,
         actionPrefix: 'socket_',
         eventToActionTransformer: (ev) => { return ev },
@@ -19,8 +24,12 @@ Vue.use(VueSocketio, io('http://localhost:8081'), {
         eventToMutationTransformer: (ev) => { return ev },
         });
 
+// eslint-disable-next-line
+console.log('Socket.io backend: ' + loc)
+        
 new Vue({
   router,
   store,
   render: h => h(App)
 }).$mount('#app')
+

@@ -18,7 +18,7 @@
         
         <v-list-tile @click="goTo('drinks')">
           <v-list-tile-action>
-            <v-icon>local_bar</v-icon>
+            <v-icon>local_drink</v-icon>
           </v-list-tile-action>
           <v-list-tile-title>Drinks</v-list-tile-title>
         </v-list-tile>
@@ -32,7 +32,7 @@
       
         <v-list-tile @click="goTo('glasses')">
           <v-list-tile-action>
-            <v-icon>local_drink</v-icon>
+            <v-icon>local_bar</v-icon>
           </v-list-tile-action>
           <v-list-tile-title>Glasses</v-list-tile-title>
         </v-list-tile>
