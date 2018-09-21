@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import wifi from './modules/wifi'
+import drinkOrders from './modules/drinkOrders'
 import glasses from './modules/glasses'
 
 Vue.use(Vuex)
@@ -8,6 +9,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     modules: {
         wifi: wifi,
+        drinkOrders: drinkOrders,
         glasses: glasses,
         
     },
