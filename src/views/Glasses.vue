@@ -22,7 +22,7 @@
                     slot="activator"
                     icon
                   >
-                    <v-icon>more_vert</v-icon>
+                    <v-icon>mdi-dots-vertical</v-icon>
                   </v-btn>
                   <v-list>
                   
@@ -31,7 +31,7 @@
                         <v-list-tile-title>Edit</v-list-tile-title>
                       </v-list-tile-content>
                       <v-list-tile-action>
-                        <v-icon>edit</v-icon>
+                        <v-icon>mdi-pencil</v-icon>
                       </v-list-tile-action>
                     </v-list-tile>
                     
@@ -40,7 +40,7 @@
                         <v-list-tile-title>Delete</v-list-tile-title>
                       </v-list-tile-content>
                       <v-list-tile-action>
-                        <v-icon>delete</v-icon>
+                        <v-icon>mdi-delete</v-icon>
                       </v-list-tile-action>
                     </v-list-tile>
                     
@@ -55,11 +55,10 @@
             fab
             fixed
             bottom right
-            dark
             color="primary"
             @click="addItem"
           >
-            <v-icon dark>add</v-icon>
+            <v-icon dark>mdi-plus</v-icon>
           </v-btn>
 
           <v-dialog v-model="dialog" persistent scrollable max-width="480px">
@@ -221,14 +220,12 @@ export default {
   },
   
   beforeRouteEnter(to, from, next) {
-    console.log('beforeRouteEnter')
     next(t => {
       t.$store.dispatch('glasses/load')
     });
   },
   
   beforeRouteLeave(to, from, next) {
-    console.log('beforeRouteLeave')
     this.$store.commit('glasses/destroy')
     next()
   }

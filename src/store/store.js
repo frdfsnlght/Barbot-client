@@ -1,12 +1,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import wifi from './modules/wifi'
 import glasses from './modules/glasses'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
     modules: {
-        glasses: glasses
+        wifi: wifi,
+        glasses: glasses,
         
     },
     
@@ -16,38 +18,38 @@ export default new Vuex.Store({
         errorMsg: false,
         snackbar: false,
         snackbarColor: 'info',
-        snackbarText: ''
+        snackbarText: '',
+        isConsole: location.host === 'localhost',
         
     },
     
     mutations: {
-        //SOCKET_CONNECT: (state) => {
-        socket_connect: (state) => {
+        //SOCKET_CONNECT(state) {
+        socket_connect(state) {
             state.connected = true
         },
-        //SOCKET_DISCONNECT: (state) => {
-        socket_disconnect: (state) => {
+        //SOCKET_DISCONNECT(state) {
+        socket_disconnect(state) {
             state.connected = false
         },
         
-        setError: (state, error) => {
+        setError(state, error) {
             state.errorMsg = error
             state.error = !!error
         },
         
-        clearError: (state) => {
+        clearError(state) {
             state.error = false
             state.errorMsg = false
         },
         
-        showSnackbar: (state, options) => {
+        showSnackbar(state, options) {
             state.snackbarText = options.text
             state.snackbarColor = options.color ? options.color : 'info'
             state.snackbar = true
-            console.log('show snackbar')
         },
         
-        setSnackbar: (state, val) => {
+        setSnackbar(state, val) {
             state.snackbar = val
         },
         

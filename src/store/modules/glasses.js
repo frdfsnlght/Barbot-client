@@ -10,7 +10,7 @@ export default {
     },
     
     getters: {
-        sortedItems: (state) => {
+        sortedItems(state) {
             return state.items.slice().sort((a, b) => {
                 if (a.size < b.size) return -1
                 if (a.size > b.size) return 1

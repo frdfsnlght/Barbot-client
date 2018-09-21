@@ -11,35 +11,35 @@
       <v-list>
         <v-list-tile @click="goTo('home')">
           <v-list-tile-action>
-            <v-icon>home</v-icon>
+            <v-icon>mdi-home</v-icon>
           </v-list-tile-action>
           <v-list-tile-title>Home</v-list-tile-title>
         </v-list-tile>
         
         <v-list-tile @click="goTo('drinks')">
           <v-list-tile-action>
-            <v-icon>local_drink</v-icon>
+            <v-icon>mdi-cup-water</v-icon>
           </v-list-tile-action>
           <v-list-tile-title>Drinks</v-list-tile-title>
         </v-list-tile>
       
         <v-list-tile @click="goTo('ingredients')">
           <v-list-tile-action>
-            <v-icon>shopping_cart</v-icon>
+            <v-icon>mdi-cart</v-icon>
           </v-list-tile-action>
           <v-list-tile-title>Ingredients</v-list-tile-title>
         </v-list-tile>
       
         <v-list-tile @click="goTo('glasses')">
           <v-list-tile-action>
-            <v-icon>local_bar</v-icon>
+            <v-icon>mdi-glass-cocktail</v-icon>
           </v-list-tile-action>
           <v-list-tile-title>Glasses</v-list-tile-title>
         </v-list-tile>
       
         <v-list-tile @click="goTo('pumps')">
           <v-list-tile-action>
-            <v-icon>local_gas_station</v-icon>
+            <v-icon>mdi-gas-station</v-icon>
           </v-list-tile-action>
           <v-list-tile-title>Pumps</v-list-tile-title>
         </v-list-tile>
@@ -47,7 +47,7 @@
         <v-divider/>
         
         <v-list-group
-          prepend-icon="settings"
+          prepend-icon="mdi-settings"
           no-action
         >
           <v-list-tile slot="activator">
@@ -57,21 +57,29 @@
           <v-list-tile @click="alert('TODO')">
             <v-list-tile-title>WiFi</v-list-tile-title>
             <v-list-tile-action>
-              <v-icon>network_wifi</v-icon>
+            
+              <v-icon v-if="wifiState === 'n/a'">mdi-wifi-off</v-icon>
+              <v-icon v-else-if="wifiState === 'n/c'">mdi-wifi</v-icon>
+              <v-icon v-else-if="wifiState === 0">mdi-wifi-strength-outline</v-icon>
+              <v-icon v-else-if="wifiState === 1">mdi-wifi-strength-1</v-icon>
+              <v-icon v-else-if="wifiState === 2">mdi-wifi-strength-2</v-icon>
+              <v-icon v-else-if="wifiState === 3">mdi-wifi-strength-3</v-icon>
+              <v-icon v-else-if="wifiState === 4">mdi-wifi-strength-4</v-icon>
+              
             </v-list-tile-action>
           </v-list-tile>
 
           <v-list-tile @click="alert('TODO')">
             <v-list-tile-title>Restart</v-list-tile-title>
             <v-list-tile-action>
-              <v-icon>cached</v-icon>
+              <v-icon>mdi-restart</v-icon>
             </v-list-tile-action>
           </v-list-tile>
 
           <v-list-tile @click="alert('TODO')">
             <v-list-tile-title>Shutdown</v-list-tile-title>
             <v-list-tile-action>
-              <v-icon>power_settings_new</v-icon>
+              <v-icon>mdi-power</v-icon>
             </v-list-tile-action>
           </v-list-tile>
         </v-list-group>
@@ -90,10 +98,10 @@
       
       <v-icon
         v-if="connected"
-      >check_circle</v-icon>
+      >mdi-check-circle</v-icon>
       <v-icon
         v-else
-      >highlight_off</v-icon>
+      >mdi-close-circle-outline</v-icon>
       
     </v-toolbar>
     <v-content>
@@ -199,8 +207,11 @@ export default {
       'error',
       'errorMsg',
       'snackbarColor',
-      'snackbarText'
-    ])
+      'snackbarText',
+    ]),
+    ...mapState({
+      wifiState: state => state.wifi.state
+    }),
   },
   
   methods: {
@@ -224,6 +235,13 @@ export default {
       this.$store.commit('clearError')
     },
     
+  },
+  
+  created() {
+    if (this.$store.isConsole)
+      console.log('Client is running as console.')
+    else
+      console.log('Client is running as remote.')
   }
 }
 </script>

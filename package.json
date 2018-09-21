@@ -8,7 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "material-design-icons": "^3.0.1",
+    "@mdi/font": "^2.8.94",
     "socket.io-client": "^2.1.1",
     "typeface-roboto": "0.0.54",
     "vue": "^2.5.17",
