@@ -5,7 +5,7 @@
     
       <v-flex>
         <v-card dark color="primary">
-          <v-card-text>one</v-card-text>
+          <v-card-text>state crap goes here</v-card-text>
         </v-card>
       </v-flex>
       

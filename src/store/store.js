@@ -21,7 +21,7 @@ export default new Vuex.Store({
         snackbar: false,
         snackbarColor: 'info',
         snackbarText: '',
-        isConsole: location.host === 'localhost',
+        isConsole: location.hostname === 'localhost',
         
     },
     

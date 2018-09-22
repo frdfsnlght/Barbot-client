@@ -57,15 +57,7 @@
           <v-list-tile @click="alert('TODO')">
             <v-list-tile-title>WiFi</v-list-tile-title>
             <v-list-tile-action>
-            
-              <v-icon v-if="wifiState === 'n/a'">mdi-wifi-off</v-icon>
-              <v-icon v-else-if="wifiState === 'n/c'">mdi-wifi</v-icon>
-              <v-icon v-else-if="wifiState === 0">mdi-wifi-strength-outline</v-icon>
-              <v-icon v-else-if="wifiState === 1">mdi-wifi-strength-1</v-icon>
-              <v-icon v-else-if="wifiState === 2">mdi-wifi-strength-2</v-icon>
-              <v-icon v-else-if="wifiState === 3">mdi-wifi-strength-3</v-icon>
-              <v-icon v-else-if="wifiState === 4">mdi-wifi-strength-4</v-icon>
-              
+              <v-icon>mdi-wifi</v-icon>
             </v-list-tile-action>
           </v-list-tile>
 
@@ -86,6 +78,7 @@
         
       </v-list>
     </v-navigation-drawer>
+    
     <v-toolbar
       app
       clipped-left
@@ -95,15 +88,22 @@
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
+
+      <v-btn v-if="showBack" icon @click="goBack()">
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>      
       
-      <v-icon
-        v-if="connected"
-      >mdi-check-circle</v-icon>
-      <v-icon
-        v-else
-      >mdi-close-circle-outline</v-icon>
+      <v-btn v-if="showWifi" icon @click="alert('TODO')">
+        <v-icon v-if="!wifiState.ssid">mdi-wifi-off</v-icon>
+        <v-icon v-else-if="wifiState.bars === 0">mdi-wifi-strength-outline</v-icon>
+        <v-icon v-else-if="wifiState.bars === 1">mdi-wifi-strength-1</v-icon>
+        <v-icon v-else-if="wifiState.bars === 2">mdi-wifi-strength-2</v-icon>
+        <v-icon v-else-if="wifiState.bars === 3">mdi-wifi-strength-3</v-icon>
+        <v-icon v-else-if="wifiState.bars === 4">mdi-wifi-strength-4</v-icon>
+      </v-btn>
       
     </v-toolbar>
+    
     <v-content>
       <router-view
         @show-page="showPage"/>
@@ -184,6 +184,7 @@ export default {
       appTitle: 'Barbot',
       pageTitle: false,
       drawer: false,
+      showBack: false,
     }
   },
   
@@ -202,8 +203,11 @@ export default {
         this.$store.commit('setSnackbar', newValue)
       },
     },
+    showWifi() {
+        return this.isConsole && this.wifiState
+    },
     ...mapState([
-      'connected',
+      'isConsole',
       'error',
       'errorMsg',
       'snackbarColor',
@@ -228,7 +232,8 @@ export default {
     },
     
     showPage(pageTitle) {
-      this.pageTitle = pageTitle;
+      this.pageTitle = pageTitle
+      this.showBack = !!pageTitle
     },
     
     clearError() {
@@ -238,10 +243,11 @@ export default {
   },
   
   created() {
-    if (this.$store.isConsole)
+    if (this.isConsole)
       console.log('Client is running as console.')
     else
       console.log('Client is running as remote.')
   }
+  
 }
 </script>

@@ -39,6 +39,8 @@ export default {
         //SOCKET_WIFISTATE(state, wifi) {
         socket_wifiState(state, wifi) {
             state.state = wifi
+            console.log('wifiState is now:')
+            console.dir(wifi)
         },
         
     },
