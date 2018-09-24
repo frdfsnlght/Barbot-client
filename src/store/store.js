@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import wifi from './modules/wifi'
 import drinkOrders from './modules/drinkOrders'
 import glasses from './modules/glasses'
+import ingredients from './modules/ingredients'
+import drinks from './modules/drinks'
 
 Vue.use(Vuex)
 
@@ -10,7 +12,9 @@ export default new Vuex.Store({
     modules: {
         wifi: wifi,
         drinkOrders: drinkOrders,
+        ingredients: ingredients,
         glasses: glasses,
+        drinks: drinks,
         
     },
     
