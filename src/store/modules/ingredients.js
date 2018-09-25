@@ -5,42 +5,54 @@ export default {
     
     state: {
         items: [],
+        item: null,
         loading: false,
-        loaded: false,
+        loadedAll: false,
+        loadedOne: false,
     },
     
     getters: {
         sortedItems(state) {
             return state.items.slice().sort((a, b) => {
-                if (a.name < b.name) return -1
-                if (a.name > b.name) return 1
-                return 0
+                return a.name.localeCompare(b.name, 'en', {'sensitivity': 'base'})
             })
+        },
+        getById: (state) => (id) => {
+            if (! state.loadedAll) return null
+            return state.items.find(item => item.id === id)
         }
     },
   
     mutations: {
         loading(state) {
             state.loading = true
-            state.loaded = false
-            console.log('loading ingredients...')
+//            console.log('loading ingredients...')
         },
         
-        loaded(state, items) {
+        loadedAll(state, items) {
             state.items = items
             state.loading = false
-            state.loaded = true
-            console.log('loaded ' + items.length + ' ingredients')
+            state.loadedAll = true
+//            console.log('loaded ' + items.length + ' ingredients')
+        },
+        
+        loadedOne(state, item) {
+            state.item = item
+            state.loading = false
+            state.loadedOne = true
+//            console.log('loaded ' + items.length + ' ingredients')
         },
         
         destroy(state) {
             state.items = []
-            state.loaded = false
-            console.log('destroyed ingredients')
+            state.item = null
+            state.loadedAll = false
+            state.loadedOne = false
+//            console.log('destroyed ingredients')
         },
         
         socket_ingredientSaved(state, item) {
-            if (! state.loaded) return
+            if (! state.loadedAll) return
             let g = state.items.find((e) => { return e.id === item.id })
             if (g) {
                 Object.assign(g, item)
@@ -54,7 +66,7 @@ export default {
         },
 
         socket_ingredientDeleted(state, item) {
-            if (! state.loaded) return
+            if (! state.loadedAll) return
             let g = state.items.find((e) => { return e.id === item.id })
             if (g) {
                 let i = state.items.indexOf(g)
@@ -70,16 +82,28 @@ export default {
     
     actions: {
         
-        load({commit, state}) {
-            if (state.loaded) return
+        loadAll({commit, state}) {
+            if (state.loadedAll) return
             commit('loading')
             Vue.prototype.$socket.emit('getIngredients', (res) => {
-                console.dir(res)
                 if (res.error) {
                     commit('setError', res.error, {root: true})
-                    commit('loaded', [])
+                    commit('loadedAll', [])
                 } else {
-                    commit('loaded', res.items)
+                    commit('loadedAll', res.items)
+                }
+            })
+        },
+        
+        loadById({commit, state}, id) {
+            if (state.loadedOne) return
+            commit('loading')
+            Vue.prototype.$socket.emit('getIngredient', id, (res) => {
+                if (res.error) {
+                    commit('setError', res.error, {root: true})
+                    commit('loadedOne', null)
+                } else {
+                    commit('loadedOne', res.item)
                 }
             })
         },

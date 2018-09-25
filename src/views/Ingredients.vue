@@ -11,6 +11,8 @@
               v-for="item in items"
               :key="item.id"
               avatar
+              ripple
+              @click="itemDetail(item)"
             >
               <v-list-tile-avatar>
                 <v-icon v-if="item.isAlcoholic">mdi-flash</v-icon>
@@ -22,39 +24,46 @@
               </v-list-tile-content>
               
               <v-list-tile-action>
-                <v-menu bottom left>
-                  <v-btn
-                    slot="activator"
-                    icon
-                  >
-                    <v-icon>mdi-dots-vertical</v-icon>
-                  </v-btn>
-                  <v-list>
-                  
-                    <v-list-tile ripple @click="editItem(item)">
-                      <v-list-tile-content>
-                        <v-list-tile-title>Edit</v-list-tile-title>
-                      </v-list-tile-content>
-                      <v-list-tile-action>
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-list-tile-action>
-                    </v-list-tile>
-                    
-                    <v-list-tile ripple @click="deleteItem(item)">
-                      <v-list-tile-content>
-                        <v-list-tile-title>Delete</v-list-tile-title>
-                      </v-list-tile-content>
-                      <v-list-tile-action>
-                        <v-icon>mdi-delete</v-icon>
-                      </v-list-tile-action>
-                    </v-list-tile>
-                    
-                  </v-list>
-                </v-menu>
+                <v-btn
+                  icon
+                  @click.stop="showMenu(item, $event)"
+                >
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
               </v-list-tile-action>
-          
+              
             </v-list-tile>
           </v-list>
+
+          <v-menu
+            v-model="menu"
+            :position-x="menuX"
+            :position-y="menuY"
+            absolute
+            offset-y
+          >
+            <v-list>
+            
+              <v-list-tile ripple @click="editItem()">
+                <v-list-tile-content>
+                  <v-list-tile-title>Edit</v-list-tile-title>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                  <v-icon>mdi-pencil</v-icon>
+                </v-list-tile-action>
+              </v-list-tile>
+              
+              <v-list-tile ripple @click="deleteItem()">
+                <v-list-tile-content>
+                  <v-list-tile-title>Delete</v-list-tile-title>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                  <v-icon>mdi-delete</v-icon>
+                </v-list-tile-action>
+              </v-list-tile>
+              
+            </v-list>
+          </v-menu>
           
           <v-btn
             fab
@@ -140,7 +149,10 @@ export default {
       item: {},
       dialog: false,
       edit: false,
-      valid: true
+      valid: true,
+      menu: false,
+      menuX: 0,
+      menuY: 0,
     }
   },
   components: {
@@ -162,13 +174,19 @@ export default {
   
   methods: {
   
-    editItem(item) {
-      this.$refs.form.reset()
-      this.item = {...item}
-      this.edit = true
-      this.dialog = true
+    itemDetail(item) {
+      console.log('item detail')
+      console.dir(item)
     },
-    
+  
+    showMenu(item, e) {
+      this.$refs.form.reset()
+      this.item = JSON.parse(JSON.stringify(item))
+      this.menuX = e.clientX
+      this.menuY = e.clientY
+      this.menu = true
+    },
+  
     addItem() {
       this.$refs.form.reset()
       this.item = {
@@ -176,6 +194,11 @@ export default {
         name: undefined
       }
       this.edit = false
+      this.dialog = true
+    },
+    
+    editItem() {
+      this.edit = true
       this.dialog = true
     },
     
@@ -191,10 +214,10 @@ export default {
       })
     },
     
-    deleteItem(item) {
-      this.$refs.confirm.open('Delete', 'Are you sure you want to delete "' + item.name + '"?').then((confirm) => {
+    deleteItem() {
+      this.$refs.confirm.open('Delete', 'Are you sure you want to delete "' + this.item.name + '"?').then((confirm) => {
         if (confirm)
-          this.$store.dispatch('ingredients/delete', item)
+          this.$store.dispatch('ingredients/delete', this.item)
       })
       
     },
@@ -203,7 +226,7 @@ export default {
   
   beforeRouteEnter(to, from, next) {
     next(t => {
-      t.$store.dispatch('ingredients/load')
+      t.$store.dispatch('ingredients/loadAll')
     });
   },
   

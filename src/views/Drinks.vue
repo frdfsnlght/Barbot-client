@@ -11,9 +11,13 @@
               v-for="item in items"
               :key="item.id"
               avatar
+              ripple
+              @click="itemDetail(item)"
             >
-              <v-list-tile-avatar v-if="item.isFavorite">
-                <v-icon>mdi-heart</v-icon>
+              <v-list-tile-avatar>
+                <v-icon v-if="item.isFavorite">mdi-heart</v-icon>
+                <v-icon v-if="item.isAlcoholic">mdi-flash</v-icon>
+                <v-icon v-else>mdi-baby-buggy</v-icon>
               </v-list-tile-avatar>
 
               <v-list-tile-content>
@@ -22,39 +26,46 @@
               </v-list-tile-content>
               
               <v-list-tile-action>
-                <v-menu bottom left>
-                  <v-btn
-                    slot="activator"
-                    icon
-                  >
-                    <v-icon>mdi-dots-vertical</v-icon>
-                  </v-btn>
-                  <v-list>
-                  
-                    <v-list-tile ripple @click="editItem(item)">
-                      <v-list-tile-content>
-                        <v-list-tile-title>Edit</v-list-tile-title>
-                      </v-list-tile-content>
-                      <v-list-tile-action>
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-list-tile-action>
-                    </v-list-tile>
-                    
-                    <v-list-tile ripple @click="deleteItem(item)">
-                      <v-list-tile-content>
-                        <v-list-tile-title>Delete</v-list-tile-title>
-                      </v-list-tile-content>
-                      <v-list-tile-action>
-                        <v-icon>mdi-delete</v-icon>
-                      </v-list-tile-action>
-                    </v-list-tile>
-                    
-                  </v-list>
-                </v-menu>
+                <v-btn
+                  icon
+                  @click.stop="showMenu(item, $event)"
+                >
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
               </v-list-tile-action>
           
             </v-list-tile>
           </v-list>
+
+          <v-menu
+            v-model="menu"
+            :position-x="menuX"
+            :position-y="menuY"
+            absolute
+            offset-y
+          >
+            <v-list>
+            
+              <v-list-tile ripple @click="editItem()">
+                <v-list-tile-content>
+                  <v-list-tile-title>Edit</v-list-tile-title>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                  <v-icon>mdi-pencil</v-icon>
+                </v-list-tile-action>
+              </v-list-tile>
+              
+              <v-list-tile ripple @click="deleteItem()">
+                <v-list-tile-content>
+                  <v-list-tile-title>Delete</v-list-tile-title>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                  <v-icon>mdi-delete</v-icon>
+                </v-list-tile-action>
+              </v-list-tile>
+              
+            </v-list>
+          </v-menu>
           
           <v-btn
             fab
@@ -78,6 +89,7 @@
                   class="headline"
                 >Add Drink</span>
               </v-card-title>
+              
               <v-card-text>
                 <v-form ref="form" v-model="valid" lazy-validation>
                   <v-container grid-list-md>
@@ -101,7 +113,7 @@
                         ></v-text-field>
                       </v-flex>
                       
-                      <v-flex xs6>
+                      <v-flex xs12>
                         <v-select
                           :items="glasses"
                           item-text="name"
@@ -113,6 +125,12 @@
                         ></v-select>
                       </v-flex>
 
+                      <v-flex xs12>
+                        <drink-ingredients
+                          title="Ingredients"
+                          v-model="item.ingredients"></drink-ingredients>
+                      </v-flex>
+                      
                       <v-flex xs12>
                         <v-textarea
                           label="Instructions"
@@ -152,6 +170,7 @@
 import { mapState, mapGetters } from 'vuex'
 import Loading from '../components/Loading'
 import Confirm from '../components/Confirm'
+import DrinkIngredients from '../components/DrinkIngredients'
 
 export default {
   name: 'Drinks',
@@ -160,13 +179,19 @@ export default {
       item: {},
       dialog: false,
       edit: false,
-      valid: true
+      valid: true,
+      menu: false,
+      menuX: 0,
+      menuY: 0,
     }
   },
+  
   components: {
     Loading,
-    Confirm
+    Confirm,
+    DrinkIngredients
   },
+  
   created() {
     this.$emit('show-page', 'Drinks')
   },
@@ -177,22 +202,25 @@ export default {
       glasses: 'glasses/sortedItems',
     }),
     ...mapState({
-      loading: state => state.drinks.loading,
+      loading: state => state.drinks.loadingAll,
     })
   },
   
   methods: {
   
-    editItem(item) {
-      this.$refs.form.reset()
-      this.item = {...item}
-      this.edit = true
-      this.$store.dispatch('glasses/load')
+    itemDetail(item) {
+      console.log('item detail')
       console.dir(item)
-      
-      this.dialog = true
     },
-    
+  
+    showMenu(item, e) {
+      this.$refs.form.reset()
+      this.item = JSON.parse(JSON.stringify(item))
+      this.menuX = e.clientX
+      this.menuY = e.clientY
+      this.menu = true
+    },
+  
     addItem() {
       this.$refs.form.reset()
       this.item = {
@@ -201,35 +229,39 @@ export default {
         secondaryName: undefined,
         instructions: undefined,
         glassId: undefined,
-        // ingredients
+        ingredients: []
       }
       this.edit = false
-      this.$store.dispatch('glasses/load')
+      this.$store.dispatch('glasses/loadAll')
+      this.dialog = true
+    },
+    
+    editItem() {
+      this.edit = true
+      this.$store.dispatch('glasses/loadAll')
       this.dialog = true
     },
     
     closeDialog() {
       this.dialog = false
       this.item = {}
-      this.$store.commit('glasses/destroy')
-      
     },
     
     saveItem() {
       if (! this.$refs.form.validate()) return
-      
-      console.dir(this.item)
-      this.closeDialog()
-      
-      //this.$store.dispatch('drinks/save', this.item).then(() => {
-      //  this.closeDialog()
-      //})
+      if ((! this.item.ingredients) || (this.item.ingredients.length == 0)) {
+        this.$store.commit('setError', 'At least one ingredient is required!')
+        return
+      }
+      this.$store.dispatch('drinks/save', this.item).then(() => {
+        this.closeDialog()
+      })
     },
     
-    deleteItem(item) {
-      this.$refs.confirm.open('Delete', 'Are you sure you want to delete "' + item.primaryName + '"?').then((confirm) => {
+    deleteItem() {
+      this.$refs.confirm.open('Delete', 'Are you sure you want to delete "' + this.item.name + '"?').then((confirm) => {
         if (confirm)
-          this.$store.dispatch('drinks/delete', item)
+          this.$store.dispatch('drinks/delete', this.item)
       })
       
     },
@@ -238,12 +270,13 @@ export default {
   
   beforeRouteEnter(to, from, next) {
     next(t => {
-      t.$store.dispatch('drinks/load')
+      t.$store.dispatch('drinks/loadAll')
     });
   },
   
   beforeRouteLeave(to, from, next) {
     this.$store.commit('drinks/destroy')
+    this.$store.commit('glasses/destroy')
     next()
   }
   
