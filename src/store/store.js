@@ -20,6 +20,7 @@ export default new Vuex.Store({
     
     state: {
         connected: false,
+        options: {},
         error: false,
         errorMsg: false,
         snackbar: false,
@@ -37,6 +38,10 @@ export default new Vuex.Store({
         //SOCKET_DISCONNECT(state) {
         socket_disconnect(state) {
             state.connected = false
+        },
+        
+        socket_clientOptions(state, options) {
+            state.options = options
         },
         
         setError(state, error) {

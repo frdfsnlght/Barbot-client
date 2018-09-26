@@ -16,12 +16,28 @@ export default new Router({
     name: 'drinks',
     component: () => import(/* webpackChunkName: "drinks" */ './views/Drinks.vue')
   }, {
+    path: '/drinkDetail/:id',
+    name: 'drinkDetail',
+    component: () => import(/* webpackChunkName: "drinkDetail" */ './views/DrinkDetail.vue')
+  }, {
     path: '/ingredients',
     name: 'ingredients',
     component: () => import(/* webpackChunkName: "ingredients" */ './views/Ingredients.vue')
   }, {
+    path: '/ingredientDetail/:id',
+    name: 'ingredientDetail',
+    component: () => import(/* webpackChunkName: "ingredientDetail" */ './views/IngredientDetail.vue')
+  }, {
     path: '/glasses',
     name: 'glasses',
     component: () => import(/* webpackChunkName: "glasses" */ './views/Glasses.vue')
+  }, {
+    path: '/glassDetail/:id',
+    name: 'glassDetail',
+    component: () => import(/* webpackChunkName: "glassDetail" */ './views/GlassDetail.vue')
+  }, {
+    path: '/drinkOrderDetail/:id',
+    name: 'drinkOrderDetail',
+    component: () => import(/* webpackChunkName: "drinkOrderDetail" */ './views/DrinkOrderDetail.vue')
   }]
 })

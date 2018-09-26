@@ -4,13 +4,11 @@
     <v-layout column>
     
       <v-flex>
-        <v-card dark color="primary">
-          <v-card-text>state crap goes here</v-card-text>
-        </v-card>
+        <barbot-controls ref="barbotControls"></barbot-controls>
       </v-flex>
       
       <v-flex>
-        <drinkorders></drinkorders>
+        <drink-orders ref="drinkOrders"></drink-orders>
       </v-flex>
       
     </v-layout>
@@ -20,6 +18,7 @@
 
 <script>
 
+import BarbotControls from '../components/BarbotControls'
 import DrinkOrders from '../components/DrinkOrders'
 
 export default {
@@ -29,7 +28,8 @@ export default {
   },
   
   components: {
-    drinkorders: DrinkOrders
+    BarbotControls,
+    DrinkOrders
   },
   
   created() {
@@ -37,14 +37,13 @@ export default {
   },
   
   beforeRouteEnter(to, from, next) {
-    next()
-//    next(t => {
-//      t.$store.dispatch('glasses/load')
-//    })
+    next(t => {
+      t.$refs.drinkOrders.loadOrders()
+    })
   },
   
   beforeRouteLeave(to, from, next) {
-//    this.$store.commit('glasses/destroy')
+    this.$refs.drinkOrders.unloadOrders()
     next()
   }
   

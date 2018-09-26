@@ -179,9 +179,7 @@ export default {
       return this.items.slice().sort((a, b) => {
         if (a.step < b.step) return -1
         if (a.step > b.step) return 1
-        if (a.ingredient.name < b.ingredient.name) return -1
-        if (a.ingredient.name > b.ingredient.name) return 1
-        return 0
+        return a.name.localeCompare(b.name, 'en', {'sensitivity': 'base'})
       })
     },
     
@@ -202,7 +200,7 @@ export default {
         step: 0,
       }
       this.editIndex = -1
-      this.$store.dispatch('ingredients/load')
+      this.$store.dispatch('ingredients/loadAll')
       this.dialog = true
     },
   
@@ -210,7 +208,7 @@ export default {
       this.$refs.form.reset()
       this.item = JSON.parse(JSON.stringify(item))
       this.editIndex = this.items.indexOf(item)
-      this.$store.dispatch('ingredients/load')
+      this.$store.dispatch('ingredients/loadAll')
       this.dialog = true
     },
   

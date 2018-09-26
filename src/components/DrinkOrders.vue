@@ -3,7 +3,7 @@
         
     <v-toolbar
       clipped-left
-      color="primary"
+      color="secondary"
       dark
       dense
     >
@@ -26,7 +26,17 @@
         <v-list-tile
           v-for="item in items"
           :key="item.id"
+          avatar
+          ripple
+          @click="itemDetail(item)"
         >
+          
+          <v-list-tile-avatar>
+            <v-icon v-if="item.userHold">mdi-pause</v-icon>
+            <v-icon v-else-if="item.ingredientHold">mdi-pause-octogon</v-icon>
+            <v-icon v-else>mdi-play</v-icon>
+          </v-list-tile-avatar>
+          
           <v-list-tile-content>
             <v-list-tile-title>{{item.drink.name}}</v-list-tile-title>
             <v-list-tile-sub-title>{{item.name}}</v-list-tile-sub-title>
@@ -127,8 +137,7 @@ export default {
   methods: {
   
     itemDetail(item) {
-      console.log('item detail')
-      console.dir(item)
+      this.$router.push({name: 'drinkOrderDetail', params: {id: item.id}})
     },
   
     showMenu(item, e) {
@@ -143,7 +152,7 @@ export default {
     },
   
     toggleHoldItem() {
-      console.log('TODO: toggle hold drink order')
+      this.$store.dispatch('drinkOrders/toggleHold', this.item)
     },
     
     cancelItem() {
@@ -152,6 +161,14 @@ export default {
           this.$store.dispatch('drinkOrders/delete', this.item)
       })
       
+    },
+    
+    loadOrders() {
+      this.$store.dispatch('drinkOrders/loadPending')
+    },
+
+    unloadOrders() {
+      this.$store.commit('drinkOrders/destroy')
     },
     
   },

@@ -5,7 +5,7 @@ export default {
     
     state: {
         items: [],
-        item: null,
+        item: {},
         loading: false,
         loadedAll: false,
         loadedOne: false,
@@ -26,56 +26,61 @@ export default {
     mutations: {
         loading(state) {
             state.loading = true
-//            state.loaded = false
-//            console.log('loading glasses...')
         },
         
         loadedAll(state, items) {
             state.items = items
             state.loading = false
             state.loadedAll = true
-//            console.log('loaded ' + items.length + ' glasses')
         },
   
         loadedOne(state, item) {
             state.item = item
             state.loading = false
             state.loadedOne = true
-//            console.log('loaded ' + items.length + ' glasses')
         },
 
         destroy(state) {
             state.items = []
-            state.item = null
+            state.item = {}
             state.loadedAll = false
             state.loadedOne = false
-//            console.log('destroyed glasses')
         },
         
         socket_glassSaved(state, item) {
-            if (! state.loadedAll) return
-            let g = state.items.find((e) => { return e.id === item.id })
-            if (g) {
-                Object.assign(g, item)
+            if (state.loadedAll) {
+                let g = state.items.find((e) => { return e.id === item.id })
+                if (g) {
+                    Object.assign(g, item)
+                    this.commit('showSnackbar', {text: 'Glass updated'}, {root: true})
+                    console.log('updated glass ' + item.id)
+                } else {
+                    state.items.push(item)
+                    this.commit('showSnackbar', {text: 'Glass added'}, {root: true})
+                    console.log('added glass '  + item.id)
+                }
+            }
+            if (state.loadedOne && state.item.id === item.id) {
+                Object.assign(state.item, item)
                 this.commit('showSnackbar', {text: 'Glass updated'}, {root: true})
-                console.log('updated glass ' + item.id)
-            } else {
-                state.items.push(item)
-                this.commit('showSnackbar', {text: 'Glass added'}, {root: true})
-                console.log('added glass '  + item.id)
             }
         },
 
         socket_glassDeleted(state, item) {
-            if (! state.loadedAll) return
-            let g = state.items.find((e) => { return e.id === item.id })
-            if (g) {
-                let i = state.items.indexOf(g)
-                if (i != -1) {
-                    state.items.splice(i, 1)
-                    this.commit('showSnackbar', {text: 'Glass deleted'}, {root: true})
-                    console.log('deleted glass '  + item.id)
+            if (state.loadedAll) {
+                let g = state.items.find((e) => { return e.id === item.id })
+                if (g) {
+                    let i = state.items.indexOf(g)
+                    if (i != -1) {
+                        state.items.splice(i, 1)
+                        this.commit('showSnackbar', {text: 'Glass deleted'}, {root: true})
+                        console.log('deleted glass '  + item.id)
+                    }
                 }
+            }
+            if (state.loadedOne && state.item.id === item.id) {
+                state.item = {}
+                this.commit('showSnackbar', {text: 'Glass deleted'}, {root: true})
             }
         },
 
@@ -102,7 +107,7 @@ export default {
             Vue.prototype.$socket.emit('getGlass', id, (res) => {
                 if (res.error) {
                     commit('setError', res.error, {root: true})
-                    commit('loadedOne', null)
+                    commit('loadedOne', {})
                 } else {
                     commit('loadedOne', res.item)
                 }

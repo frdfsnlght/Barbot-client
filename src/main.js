@@ -17,3 +17,15 @@ window.App = new Vue({
   render: h => h(App)
 }).$mount('#app')
 
+
+Vue.prototype.$formatDateTimeString = function(d) {
+    return new Date(Date.parse(d)).toLocaleDateString(
+        undefined, {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+        })
+}
