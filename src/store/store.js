@@ -31,17 +31,22 @@ export default new Vuex.Store({
     },
     
     mutations: {
-        //SOCKET_CONNECT(state) {
         socket_connect(state) {
             state.connected = true
         },
-        //SOCKET_DISCONNECT(state) {
         socket_disconnect(state) {
             state.connected = false
         },
         
         socket_clientOptions(state, options) {
             state.options = options
+            if (options.isConsole !== 'auto') {
+                let newIsConsole = options.isConsole === 'true'
+                if (newIsConsole !== state.isConsole) {
+                    state.isConsole = newIsConsole
+                    console.log('Client is now ' + (state.isConsole ? '' : 'NOT ') + 'running as console.')
+                }
+            }
         },
         
         setError(state, error) {
