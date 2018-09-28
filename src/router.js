@@ -18,6 +18,7 @@ export default new Router({
   }, {
     path: '/drinkDetail/:id',
     name: 'drinkDetail',
+    props: true,
     component: () => import(/* webpackChunkName: "drinkDetail" */ './views/DrinkDetail.vue')
   }, {
     path: '/ingredients',
@@ -39,5 +40,9 @@ export default new Router({
     path: '/drinkOrderDetail/:id',
     name: 'drinkOrderDetail',
     component: () => import(/* webpackChunkName: "drinkOrderDetail" */ './views/DrinkOrderDetail.vue')
+  }, {
+    path: '/drinksMenu',
+    name: 'drinksMenu',
+    component: () => import(/* webpackChunkName: "drinksMenu" */ './views/DrinksMenu.vue')
   }]
 })

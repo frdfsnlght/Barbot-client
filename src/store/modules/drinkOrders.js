@@ -7,7 +7,7 @@ export default {
         items: [],
         item: {},
         loading: false,
-        loadedPending: false,
+        loadedWaiting: false,
         loadedOne: false,
     },
     
@@ -32,10 +32,10 @@ export default {
             state.loading = true
         },
         
-        loadedPending(state, items) {
+        loadedWaiting(state, items) {
             state.items = items
             state.loading = false
-            state.loadedPending = true
+            state.loadedWaiting = true
         },
         
         loadedOne(state, item) {
@@ -47,38 +47,37 @@ export default {
         destroy(state) {
             state.items = []
             state.item = {}
-            state.loadedPending = false
+            state.loadedWaiting = false
             state.loadedOne = false
         },
         
-        socket_drinkOrderSaved(state, item) {
-            if (state.loadedPending) {
+        socket_drinkOrderSubmitted(state, item) {
+            if (state.loadedWaiting) {
+                state.items.push(item)
+                this.commit('showSnackbar', {text: 'Drink order submitted'}, {root: true})
+            }
+        },
+
+        socket_drinkOrderUpdated(state, item) {
+            if (state.loadedWaiting) {
                 let o = state.items.find((e) => { return e.id === item.id })
                 if (o) {
                     Object.assign(o, item)
-                    this.commit('showSnackbar', {text: 'Drink order updated'}, {root: true})
-                    console.log('updated drink order ' + item.id)
-                } else {
-                    state.items.push(item)
-                    this.commit('showSnackbar', {text: 'Drink order added'}, {root: true})
-                    console.log('added drink order '  + item.id)
                 }
             }
             if (state.loadedOne && state.item.id === item.id) {
                 Object.assign(state.item, item)
-                this.commit('showSnackbar', {text: 'Drink order updated'}, {root: true})
             }
         },
 
-        socket_drinkOrderDeleted(state, item) {
-            if (state.loadedPending) {
+        socket_drinkOrderCancelled(state, item) {
+            if (state.loadedWaiting) {
                 let o = state.items.find((e) => { return e.id === item.id })
                 if (o) {
                     let i = state.items.indexOf(o)
                     if (i != -1) {
                         state.items.splice(i, 1)
                         this.commit('showSnackbar', {text: 'Drink order cancelled'}, {root: true})
-                        console.log('deleted drink order '  + item.id)
                     }
                 }
             }
@@ -88,19 +87,35 @@ export default {
             }
         },
 
+        socket_drinkOrderStarted(state, item) {
+            if (state.loadedWaiting) {
+                let o = state.items.find((e) => { return e.id === item.id })
+                if (o) {
+                    let i = state.items.indexOf(o)
+                    if (i != -1) {
+                        state.items.splice(i, 1)
+                    }
+                }
+            }
+            if (state.loadedOne && state.item.id === item.id) {
+                state.item = {}
+                this.commit('showSnackbar', {text: 'Drink order started'}, {root: true})
+            }
+        },
+
     },
     
     actions: {
         
-        loadPending({commit, state}) {
-            if (state.loadedPending) return
+        loadWaiting({commit, state}) {
+            if (state.loadedWaiting) return
             commit('loading')
-            Vue.prototype.$socket.emit('getPendingDrinkOrders', (res) => {
+            Vue.prototype.$socket.emit('getWaitingDrinkOrders', (res) => {
                 if (res.error) {
                     commit('setError', res.error, {root: true})
-                    commit('loadedPending', [])
+                    commit('loadedWaiting', [])
                 } else {
-                    commit('loadedPending', res.items)
+                    commit('loadedWaiting', res.items)
                 }
             })
         },
@@ -118,9 +133,9 @@ export default {
             })
         },
         
-        save({commit}, item) {
+        submit({commit}, item) {
             return new Promise((resolve, reject) => {
-                Vue.prototype.$socket.emit('saveDrinkOrder', item, (res) => {
+                Vue.prototype.$socket.emit('submitDrinkOrder', item, (res) => {
                     if (res.error) {
                         commit('setError', res.error, {root: true})
                         reject()
@@ -131,9 +146,9 @@ export default {
             })
         },
         
-        delete({commit}, item) {
+        cancel({commit}, item) {
             return new Promise((resolve, reject) => {
-                Vue.prototype.$socket.emit('deleteDrinkOrder', item.id, (res) => {
+                Vue.prototype.$socket.emit('cancelDrinkOrder', item.id, (res) => {
                     if (res.error) {
                         commit('setError', res.error, {root: true})
                         reject()

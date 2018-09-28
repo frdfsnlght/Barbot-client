@@ -234,7 +234,6 @@ export default {
         if (confirm)
           this.$store.dispatch('glasses/delete', this.item)
       })
-      
     },
     
   },

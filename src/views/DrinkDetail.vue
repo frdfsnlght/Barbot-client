@@ -44,6 +44,22 @@
         
       </v-list>
 
+      <template v-if="item.isOnMenu">
+      
+        <order-drink ref="orderDrink"></order-drink>
+
+        <v-btn
+          fab
+          fixed
+          bottom right
+          color="primary"
+          @click="orderDrink"
+        >
+          <v-icon dark>mdi-plus</v-icon>
+        </v-btn>
+        
+      </template>
+      
     </template>
     
   </v-card>
@@ -54,9 +70,16 @@
 
 import { mapState } from 'vuex'
 import Loading from '../components/Loading'
+import OrderDrink from '../components/OrderDrink'
 
 export default {
   name: 'DrinkDetail',
+  props: {
+    id: {},
+    locationHistory: {
+      default: false
+    }
+  }, 
   data() {
     return {
     }
@@ -64,6 +87,7 @@ export default {
   
   components: {
     Loading,
+    OrderDrink,
   },
   
   created() {
@@ -96,11 +120,21 @@ export default {
   
   methods: {
     
+    orderDrink() {
+      this.$refs.orderDrink.open(this.item).then((order) => {
+        if (order)
+          this.$store.dispatch('drinksMenu/submitOrder', order).then(() => {
+            if (this.locationHistory)
+              this.$router.go(-2)
+          })
+      })
+    },
+    
   },
   
   beforeRouteEnter(to, from, next) {
     next(t => {
-      t.$store.dispatch('drinks/loadById', t.$route.params.id)
+      t.$store.dispatch('drinks/loadById', t.id)
     });
   },
   

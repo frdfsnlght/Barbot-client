@@ -33,7 +33,7 @@
           
           <v-list-tile-avatar>
             <v-icon v-if="item.userHold">mdi-pause</v-icon>
-            <v-icon v-else-if="item.ingredientHold">mdi-pause-octogon</v-icon>
+            <v-icon v-else-if="item.ingredientHold">mdi-pause-octagon</v-icon>
             <v-icon v-else>mdi-play</v-icon>
           </v-list-tile-avatar>
           
@@ -98,6 +98,8 @@
       <v-icon dark>mdi-plus</v-icon>
     </v-btn>
     
+    <confirm ref="confirm"></confirm>
+    
   </v-card>
           
 </template>
@@ -148,7 +150,7 @@ export default {
     },
   
     addItem() {
-      console.log('TODO: add drink order')
+      this.$router.push({name: 'drinksMenu'})
     },
   
     toggleHoldItem() {
@@ -156,15 +158,15 @@ export default {
     },
     
     cancelItem() {
-      this.$refs.confirm.open('Cancel', 'Are you sure you want to cancel this order?').then((confirm) => {
+      this.$refs.confirm.open('Cancel', 'Are you sure you want to cancel this order?', {rejectText: 'No'}).then((confirm) => {
         if (confirm)
-          this.$store.dispatch('drinkOrders/delete', this.item)
+          this.$store.dispatch('drinkOrders/cancel', this.item)
       })
       
     },
     
     loadOrders() {
-      this.$store.dispatch('drinkOrders/loadPending')
+      this.$store.dispatch('drinkOrders/loadWaiting')
     },
 
     unloadOrders() {

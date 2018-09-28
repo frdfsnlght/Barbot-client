@@ -5,6 +5,7 @@ import drinkOrders from './modules/drinkOrders'
 import glasses from './modules/glasses'
 import ingredients from './modules/ingredients'
 import drinks from './modules/drinks'
+import drinksMenu from './modules/drinksMenu'
 
 Vue.use(Vuex)
 
@@ -15,6 +16,7 @@ export default new Vuex.Store({
         ingredients: ingredients,
         glasses: glasses,
         drinks: drinks,
+        drinksMenu: drinksMenu,
         
     },
     

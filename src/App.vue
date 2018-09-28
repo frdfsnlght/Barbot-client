@@ -165,7 +165,7 @@
     <v-snackbar
       v-model="snackbar"
       :color="snackbarColor"
-      :timeout="2000"
+      :timeout="4000"
     >
       {{ snackbarText }}
       <v-btn

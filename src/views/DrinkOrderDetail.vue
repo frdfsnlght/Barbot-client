@@ -20,8 +20,6 @@
         class="px-3 subheading">This order cannot be made because of one or more missing ingredients.</p>
       
       <p class="px-3 subheading">Placed: {{createdDate}}</p>
-      <p class="px-3 subheading">Started: {{startedDate}}</p>
-      <p class="px-3 subheading">Completed: {{completedDate}}</p>
         
     </template>
     
@@ -56,12 +54,6 @@ export default {
     createdDate() {
       return this.$formatDateTimeString(this.item.createdDate)
     },
-    startedDate() {
-      return this.item.startedDate ? this.$formatDateTimeString(this.item.createdDate) : 'not started'
-    },
-    completedDate() {
-      return this.item.startedDate ? this.$formatDateTimeString(this.item.createdDate) : 'not completed'
-    },
     ...mapState({
       loading: state => state.drinkOrders.loading,
       item: state => state.drinkOrders.item,
@@ -84,7 +76,12 @@ export default {
   },
   
   sockets: {
-    drinkOrderDeleted(item) {
+    drinkOrderCancelled(item) {
+      if (this.item.id && (item.id === this.item.id)) {
+        window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/')
+      }
+    },
+    drinkOrderStarted(item) {
       if (this.item.id && (item.id === this.item.id)) {
         window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/')
       }
