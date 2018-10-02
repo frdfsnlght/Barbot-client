@@ -8,6 +8,11 @@
       dense
     >
       <v-toolbar-title>Orders</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon @click="toggleDispenserHold()">
+        <v-icon v-if="dispenserHold">mdi-pause</v-icon>
+        <v-icon v-else>mdi-play</v-icon>
+      </v-btn>
     </v-toolbar>
       
     <loading v-if="loading"></loading>
@@ -133,6 +138,7 @@ export default {
     }),
     ...mapState({
       loading: state => state.drinkOrders.loading,
+      dispenserHold: state => state.dispenserHold,
     })
   },
   
@@ -141,7 +147,11 @@ export default {
     itemDetail(item) {
       this.$router.push({name: 'drinkOrderDetail', params: {id: item.id}})
     },
-  
+
+    toggleDispenserHold() {
+      this.$store.dispatch('toggleDispenserHold')
+    },
+    
     showMenu(item, e) {
       this.item = JSON.parse(JSON.stringify(item))
       this.menuX = e.clientX

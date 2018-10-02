@@ -125,7 +125,7 @@ export default {
         
         delete({commit}, item) {
             return new Promise((resolve, reject) => {
-                Vue.prototype.$socket.emit('deleteDrink', item, (res) => {
+                Vue.prototype.$socket.emit('deleteDrink', item.id, (res) => {
                     if (res.error) {
                         commit('setError', res.error, {root: true})
                         reject()

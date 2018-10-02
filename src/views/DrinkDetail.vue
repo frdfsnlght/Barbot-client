@@ -123,7 +123,8 @@ export default {
     orderDrink() {
       this.$refs.orderDrink.open(this.item).then((order) => {
         if (order)
-          this.$store.dispatch('drinksMenu/submitOrder', order).then(() => {
+          this.$store.dispatch('drinkOrders/submit', order).then(() => {
+            this.$refs.orderDrink.close()
             if (this.locationHistory)
               this.$router.go(-2)
           })

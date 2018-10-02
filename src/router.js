@@ -44,5 +44,9 @@ export default new Router({
     path: '/drinksMenu',
     name: 'drinksMenu',
     component: () => import(/* webpackChunkName: "drinksMenu" */ './views/DrinksMenu.vue')
+  }, {
+    path: '/pumps',
+    name: 'pumps',
+    component: () => import(/* webpackChunkName: "pumps" */ './views/Pumps.vue')
   }]
 })

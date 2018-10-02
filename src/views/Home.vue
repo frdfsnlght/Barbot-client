@@ -18,6 +18,8 @@
 
 <script>
 
+import { mapState } from 'vuex'
+
 import BarbotControls from '../components/BarbotControls'
 import DrinkOrders from '../components/DrinkOrders'
 
@@ -36,8 +38,16 @@ export default {
     this.$emit('show-page', false)
   },
   
+  computed: {
+    ...mapState({
+      isConsole: state => state.isConsole,
+    })
+  },
+  
   beforeRouteEnter(to, from, next) {
     next(t => {
+      if (t.isConsole)
+        t.$store.dispatch('stopPumpSetup')
       t.$refs.drinkOrders.loadOrders()
     })
   },

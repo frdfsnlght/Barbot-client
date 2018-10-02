@@ -6,6 +6,7 @@ import glasses from './modules/glasses'
 import ingredients from './modules/ingredients'
 import drinks from './modules/drinks'
 import drinksMenu from './modules/drinksMenu'
+import pumps from './modules/pumps'
 
 Vue.use(Vuex)
 
@@ -17,6 +18,7 @@ export default new Vuex.Store({
         glasses: glasses,
         drinks: drinks,
         drinksMenu: drinksMenu,
+        pumps: pumps,
         
     },
     
@@ -29,6 +31,10 @@ export default new Vuex.Store({
         snackbarColor: 'info',
         snackbarText: '',
         isConsole: location.hostname === 'localhost',
+        dispenserHold: false,
+        dispenserState: 'idle',
+        pumpSetup: false,
+        dispensingDrink: {},
         
     },
     
@@ -51,6 +57,30 @@ export default new Vuex.Store({
             }
         },
         
+        socket_dispenserHold(state, dispenserHold) {
+            state.dispenserHold = dispenserHold
+        },
+    
+        socket_dispenserState(state, dispenserState) {
+            state.dispenserState = dispenserState
+        },
+    
+        socket_pumpSetup(state, pumpSetup) {
+            state.pumpSetup = pumpSetup
+        },
+
+        socket_dispensingDrinkOrder(state, drink) {
+            state.dispensingDrink = drink
+        },
+    
+        // eslint-disable-next-line
+        socket_drinkOrderCompleted(state, drink) {
+            state.dispensingDrink = {}
+            
+        },
+
+
+    
         setError(state, error) {
             state.errorMsg = error
             state.error = !!error
@@ -74,6 +104,33 @@ export default new Vuex.Store({
     },
     
     actions: {
+        
+        toggleDispenserHold({commit}) {
+            Vue.prototype.$socket.emit('toggleDispenserHold', (res) => {
+                if (res.error) {
+                    commit('setError', res.error)
+                }
+            })
+        },
+
+        startPumpSetup({commit}) {
+            Vue.prototype.$socket.emit('startPumpSetup', (res) => {
+                if (res.error) {
+                    commit('setError', res.error)
+                }
+            })
+        },
+
+        stopPumpSetup({commit}) {
+            Vue.prototype.$socket.emit('stopPumpSetup', (res) => {
+                if (res.error) {
+                    commit('setError', res.error)
+                }
+            })
+        },
+
+
+
         
         /*
         isConnected({state}) {

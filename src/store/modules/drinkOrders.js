@@ -51,26 +51,35 @@ export default {
             state.loadedOne = false
         },
         
-        socket_drinkOrderSubmitted(state, item) {
-            if (state.loadedWaiting) {
-                state.items.push(item)
-                this.commit('showSnackbar', {text: 'Drink order submitted'}, {root: true})
-            }
-        },
-
-        socket_drinkOrderUpdated(state, item) {
+        socket_drinkOrderSaved(state, item) {
+            console.log('drinkOrderSaved')
             if (state.loadedWaiting) {
                 let o = state.items.find((e) => { return e.id === item.id })
                 if (o) {
-                    Object.assign(o, item)
+                    if (item.startedDate) {
+                        let i = state.items.indexOf(o)
+                        if (i != -1) {
+                            state.items.splice(i, 1)
+                        }
+                    } else {
+                        Object.assign(o, item)
+                    }
+                } else {
+                    if (item.startedDate) return
+                    state.items.push(item)
+                    this.commit('showSnackbar', {text: 'Drink order submitted'}, {root: true})
                 }
             }
             if (state.loadedOne && state.item.id === item.id) {
-                Object.assign(state.item, item)
+                if (item.startedDate) {
+                    state.item = {}
+                } else {
+                    Object.assign(state.item, item)
+                }
             }
         },
 
-        socket_drinkOrderCancelled(state, item) {
+        socket_drinkOrderDeleted(state, item) {
             if (state.loadedWaiting) {
                 let o = state.items.find((e) => { return e.id === item.id })
                 if (o) {
@@ -87,6 +96,7 @@ export default {
             }
         },
 
+        /*
         socket_drinkOrderStarted(state, item) {
             if (state.loadedWaiting) {
                 let o = state.items.find((e) => { return e.id === item.id })
@@ -102,7 +112,8 @@ export default {
                 this.commit('showSnackbar', {text: 'Drink order started'}, {root: true})
             }
         },
-
+        */
+        
     },
     
     actions: {

@@ -75,9 +75,13 @@ export default {
       })
     },
     
+    close() {
+      this.dialog = false
+    },
+    
     submit() {
       this.resolve(this.order)
-      this.dialog = false
+      //this.dialog = false
     },
 
     cancel() {
