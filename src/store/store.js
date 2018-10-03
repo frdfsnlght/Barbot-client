@@ -35,6 +35,7 @@ export default new Vuex.Store({
         dispenserState: 'idle',
         pumpSetup: false,
         dispensingDrink: {},
+        glassReady: true,
         
     },
     
@@ -77,6 +78,10 @@ export default new Vuex.Store({
         socket_drinkOrderCompleted(state, drink) {
             state.dispensingDrink = {}
             
+        },
+
+        socket_glassReady(state, glassReady) {
+            state.glassReady = glassReady
         },
 
 

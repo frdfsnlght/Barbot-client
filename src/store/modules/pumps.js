@@ -12,9 +12,15 @@ export default {
     getters: {
         sortedItems(state) {
             return state.items.slice().sort((a, b) => {
-                return a.number - b.number
+                return a.id - b.id
                 //return a.name.localeCompare(b.name, 'en', {'sensitivity': 'base'})
             })
+        },
+        anyPumpRunning(state) {
+            let i = state.items.find((e) => { return !!e.substate })
+            console.log('anyPumpRunning: ' + i)
+            // TODO: this is getting recalced when a pump is updated
+            return !!i
         },
     },
   
@@ -40,8 +46,9 @@ export default {
                 let i = state.items.find((e) => { return e.id === item.id })
                 if (i) {
                     Object.assign(i, item)
-                    this.commit('showSnackbar', {text: 'Pump updated'}, {root: true})
+                    //this.commit('showSnackbar', {text: 'Pump updated'}, {root: true})
                     console.log('updated pump ' + item.id)
+                    console.dir(item)
                 }
             }
         },

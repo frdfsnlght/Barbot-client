@@ -14,12 +14,13 @@
           ripple
         >
           <v-list-tile-avatar>
-            <v-icon v-if="!item.state">mdi-power-off</v-icon>
+            <v-icon v-if="item.substate">mdi-run</v-icon>
+            <v-icon v-else-if="!item.state">mdi-power-off</v-icon>
             <v-icon v-else-if="item.state=='unloaded'">mdi-minus</v-icon>
             <v-icon v-else-if="item.state=='loaded'">mdi-plus</v-icon>
             <v-icon v-else-if="item.state=='ready'">mdi-check</v-icon>
             <v-icon v-else-if="item.state=='empty'">mdi-battery-outline</v-icon>
-            <v-icon v-else-if="item.state=='dirty'">mdi-clean</v-icon>
+            <v-icon v-else-if="item.state=='dirty'">mdi-spray-bottle</v-icon>
           </v-list-tile-avatar>
           
           <v-list-tile-content>
@@ -65,6 +66,19 @@
           <v-list-tile
             v-if="item.state=='unloaded'"
             ripple
+            @click="openLoadPump()"
+          >
+            <v-list-tile-content>
+              <v-list-tile-title>Load</v-list-tile-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-icon>mdi-plus</v-icon>
+            </v-list-tile-action>
+          </v-list-tile>
+
+          <v-list-tile
+            v-if="item.state=='unloaded'"
+            ripple
             @click="disablePump()"
           >
             <v-list-tile-content>
@@ -76,15 +90,15 @@
           </v-list-tile>
 
           <v-list-tile
-            v-if="item.state=='unloaded'"
+            v-if="item.state=='loaded'"
             ripple
-            @click="loadPump()"
+            @click="openPrimePump()"
           >
             <v-list-tile-content>
-              <v-list-tile-title>Load...</v-list-tile-title>
+              <v-list-tile-title>Prime</v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-icon>mdi-plus</v-icon>
+              <v-icon>mdi-autorenew</v-icon>
             </v-list-tile-action>
           </v-list-tile>
 
@@ -102,25 +116,12 @@
           </v-list-tile>
 
           <v-list-tile
-            v-if="item.state=='loaded'"
-            ripple
-            @click="primePump()"
-          >
-            <v-list-tile-content>
-              <v-list-tile-title>Prime...</v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-              <v-icon>mdi-autorenew</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
-
-          <v-list-tile
             v-if="item.state=='ready' || item.state=='empty'"
             ripple
-            @click="reloadPump()"
+            @click="openLoadPump()"
           >
             <v-list-tile-content>
-              <v-list-tile-title>Reload...</v-list-tile-title>
+              <v-list-tile-title>Reload</v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-icon>mdi-recycle</v-icon>
@@ -133,7 +134,7 @@
             @click="drainPump()"
           >
             <v-list-tile-content>
-              <v-list-tile-title>Drain...</v-list-tile-title>
+              <v-list-tile-title>Drain</v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-icon>mdi-backup-restore</v-icon>
@@ -141,21 +142,35 @@
           </v-list-tile>
 
           <v-list-tile
-            v-if="item.state=='dirty'"
+            v-if="item.state=='ready'"
             ripple
-            @click="cleanPump()"
+            @click="openMicroPrimePump()"
           >
             <v-list-tile-content>
-              <v-list-tile-title>Clean...</v-list-tile-title>
+              <v-list-tile-title>Prime</v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-icon>mdi-clean</v-icon>
+              <v-icon>mdi-autorenew</v-icon>
+            </v-list-tile-action>
+          </v-list-tile>
+          
+          <v-list-tile
+            v-if="item.state=='dirty'"
+            ripple
+            @click="openCleanPump()"
+          >
+            <v-list-tile-content>
+              <v-list-tile-title>Clean</v-list-tile-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-icon>mdi-spray-bottle</v-icon>
             </v-list-tile-action>
           </v-list-tile>
 
         </v-list>
       </v-menu>
       
+      <pump-wizard ref="pumpWizard" :pump="item"></pump-wizard>
       <confirm ref="confirm"></confirm>
       
     </template>
@@ -169,6 +184,7 @@
 import { mapState, mapGetters } from 'vuex'
 import Loading from '../components/Loading'
 import Confirm from '../components/Confirm'
+import PumpWizard from '../components/PumpWizard'
 
 export default {
   name: 'Ingredients',
@@ -182,7 +198,8 @@ export default {
   },
   components: {
     Loading,
-    Confirm
+    Confirm,
+    PumpWizard,
   },
   created() {
     this.$emit('show-page', 'Pumps')
@@ -191,6 +208,7 @@ export default {
   computed: {
     ...mapGetters({
       items: 'pumps/sortedItems',
+      anyPumpRunning: 'pumps/anyPumpRunning',
     }),
     ...mapState({
       loading: state => state.pumps.loading,
@@ -202,9 +220,8 @@ export default {
   methods: {
   
     itemIngredient(item) {
-      //if (! item.state) return '<disabled>'
       if (! item.ingredient) return '<empty>'
-      return item.amount + ' ' + item.units + ' ' + item.ingredient.name
+      return item.amount + ' ' + item.units + ' ' + item.ingredient.name + ' (' + Math.round((item.amount / item.containerAmount) * 100)   + '%)'
     },
     
     itemState(item) {
@@ -213,11 +230,11 @@ export default {
     },
     
     disableActions() {
-      return !(this.isConsole && this.pumpSetup)
+      return !(this.isConsole && this.pumpSetup) || this.anyPumpRunning
     },
 
     showMenu(item, e) {
-      this.item = JSON.parse(JSON.stringify(item))
+      this.item = item
       this.menuX = e.clientX
       this.menuY = e.clientY
       this.menu = true
@@ -226,38 +243,58 @@ export default {
   
     
     enablePump() {
-      console.log('enablePump')
+      this.$socket.emit('enablePump', this.item.id, (res) => {
+        if (res.error) {
+            this.$store.commit('setError', res.error)
+        }
+      })
     },
   
     disablePump() {
-      console.log('disablePump')
+      this.$socket.emit('disablePump', this.item.id, (res) => {
+        if (res.error) {
+            this.$store.commit('setError', res.error)
+        }
+      })
     },
   
-    loadPump() {
+    openLoadPump() {
       console.log('loadPump')
+      this.$refs.pumpWizard.openLoad()
     },
   
     unloadPump() {
       console.log('unloadPump')
+      this.$socket.emit('unloadPump', this.item.id, (res) => {
+        if (res.error) {
+            this.$store.commit('setError', res.error)
+        }
+      })
     },
   
-    primePump() {
+    openPrimePump() {
       console.log('primePump')
+      this.$refs.pumpWizard.openPrime()
     },
   
-    reloadPump() {
-      console.log('reloadPump')
+    openMicroPrimePump() {
+      console.log('microPrimePump')
+      this.$refs.pumpWizard.openMicroPrime()
     },
   
     drainPump() {
       console.log('drainPump')
+      this.$socket.emit('drainPump', this.item.id, (res) => {
+        if (res.error) {
+            this.$store.commit('setError', res.error)
+        }
+      })
     },
   
-    cleanPump() {
+    openCleanPump() {
       console.log('cleanPump')
+      this.$refs.pumpWizard.openClean()
     },
-  
-  
   
   },
   
