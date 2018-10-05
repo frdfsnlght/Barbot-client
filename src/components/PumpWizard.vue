@@ -89,11 +89,11 @@
             <v-layout column>
         
               <v-flex class="text-xs-center mb-3">
-                <p>Insert the pump tube into the ingredient container.</p>
-                <p>Place a glass in the dispensing area.</p>
+                <p v-if="isFullPrime">Insert the pump tube into the ingredient container.</p>
+                <p v-if="!glassReady" class="red--text">Place a glass in the dispensing area.</p>
               </v-flex>
               
-              <v-flex class="text-xs-center">
+              <v-flex v-if="isFullPrime" class="text-xs-center">
                 <v-btn
                   color="primary"
                   large
@@ -107,76 +107,27 @@
                 </v-btn>
               </v-flex>
                 
-              <v-flex class="text-xs-center">
+              <v-flex v-if="isFullPrime" class="text-xs-center">
                 <p class="my-3">If you need to prime the pump a little more, use these:</p>
               </v-flex>
               
               <v-flex class="text-xs-center">
                 <v-btn
-                  color="secondary"
+                  :color="isFullPrime ? 'secondary' : 'primary'"
                   :loading="!glassReady || pump.running"
                   :disabled="!glassReady || pump.running"
-                  @click="primePump(2)"
+                  @click="primePump(microPrimeSmall)"
                 >
-                  2 ml
+                  {{microPrimeSmall}} ml
                   <span slot="loader">Waiting...</span>
                 </v-btn>
                 <v-btn
-                  color="secondary"
+                  :color="isFullPrime ? 'secondary' : 'primary'"
                   :loading="!glassReady || pump.running"
                   :disabled="!glassReady || pump.running"
-                  @click="primePump(10)"
+                  @click="primePump(microPrimeLarge)"
                 >
-                  10 ml
-                  <span slot="loader">Waiting...</span>
-                </v-btn>
-              </v-flex>
-        
-            </v-layout>
-          </v-container>
-                
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            flat
-            @click="closeAll()">close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="microPrimeDialog" persistent scrollable max-width="480px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">Prime Pump {{pump.name}}</span>
-        </v-card-title>
-        
-        <v-card-text>
-        
-          <v-container fluid>
-            <v-layout column>
-        
-              <v-flex class="text-xs-center">
-                <p class="mb-3">Place a glass in the dispensing area.</p>
-              </v-flex>
-              
-              <v-flex class="text-xs-center">
-                <v-btn
-                  color="primary"
-                  :loading="!glassReady || pump.running"
-                  :disabled="!glassReady || pump.running"
-                  @click="primePump(2)"
-                >
-                  2 ml
-                  <span slot="loader">Waiting...</span>
-                </v-btn>
-                <v-btn
-                  color="primary"
-                  :loading="!glassReady || pump.running"
-                  :disabled="!glassReady || pump.running"
-                  @click="primePump(10)"
-                >
-                  10 ml
+                  {{microPrimeLarge}} ml
                   <span slot="loader">Waiting...</span>
                 </v-btn>
               </v-flex>
@@ -205,8 +156,9 @@
           <v-container fluid>
             <v-layout column>
         
-              <v-flex class="text-xs-center">
-                <p class="mb-3">Place a glass in the dispensing area.</p>
+              <v-flex class="text-xs-center mb-3">
+                <p>Insert the pump tube into a container of clean water.</p>
+                <p v-if="!glassReady" class="red--text">Place a glass in the dispensing area.</p>
               </v-flex>
               
               <v-flex class="text-xs-center">
@@ -217,6 +169,15 @@
                   @click="cleanPump()"
                 >
                   clean
+                  <span slot="loader">Waiting...</span>
+                </v-btn>
+                <v-btn
+                  color="primary"
+                  :loading="!glassReady || pump.running"
+                  :disabled="!glassReady || pump.running"
+                  @click="drainPump()"
+                >
+                  drain
                   <span slot="loader">Waiting...</span>
                 </v-btn>
               </v-flex>
@@ -256,7 +217,8 @@ export default {
       isReload: false,
       
       primeDialog: false,
-      microPrimeDialog: false,
+      isFullPrime: false,
+      
       cleanDialog: false,
     }
   },
@@ -267,12 +229,11 @@ export default {
   },
 
   computed: {
-    glassNotReady() {
-      return ! this.$store.glassReady
-    },
-    
     ...mapState({
+      defaultUnits: state => state.options.defaultUnits,
       glassReady: state => state.glassReady,
+      microPrimeSmall: state => state.options.microPrimeSmall,
+      microPrimeLarge: state => state.options.microPrimeLarge,
     }),
   },
   
@@ -285,7 +246,7 @@ export default {
         this.loadParams = {
           id: this.pump.id,
           containerAmount: undefined,
-          units: 'ml',
+          units: this.defaultUnits,
           percent: 50,
           ingredientId: undefined,
         }
@@ -322,11 +283,11 @@ export default {
     },
 
     openPrime() {
+      if (this.pump.state == 'loaded')
+        this.isFullPrime = true
+      else
+        this.isFullPrime = false
       this.primeDialog = true
-    },
-    
-    openMicroPrime() {
-      this.microPrimeDialog = true
     },
     
     primePump(amount) {
@@ -345,15 +306,6 @@ export default {
       this.primeDialog = false
     },
 
-    submitPrime() {
-      this.closePrime()
-    },
-    
-    closeMicroPrime() {
-      this.microPrimeDialog = false
-    },
-
-    
     openClean() {
       this.cleanDialog = true
     },
@@ -374,10 +326,17 @@ export default {
       })
     },
     
+    drainPump() {
+      this.$socket.emit('drainPump', this.pump.id, (res) => {
+        if (res.error) {
+            this.$store.commit('setError', res.error)
+        }
+      })
+    },
+    
     closeAll() {
       this.closeLoad()
       this.closePrime()
-      this.closeMicroPrime()
       this.closeClean()
     },
     

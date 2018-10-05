@@ -61,14 +61,14 @@
             </v-list-tile-action>
           </v-list-tile>
 
-          <v-list-tile @click="alert('TODO')">
+          <v-list-tile @click="restart()">
             <v-list-tile-title>Restart</v-list-tile-title>
             <v-list-tile-action>
               <v-icon>mdi-restart</v-icon>
             </v-list-tile-action>
           </v-list-tile>
 
-          <v-list-tile @click="alert('TODO')">
+          <v-list-tile @click="shutdown()">
             <v-list-tile-title>Shutdown</v-list-tile-title>
             <v-list-tile-action>
               <v-icon>mdi-power</v-icon>
@@ -162,6 +162,8 @@
       </v-card>
     </v-dialog>
     
+    <confirm ref="confirm"></confirm>
+    
     <v-snackbar
       v-model="snackbar"
       :color="snackbarColor"
@@ -183,6 +185,7 @@
 <script>
 
 import { mapState } from 'vuex'
+import Confirm from './components/Confirm'
 
 export default {
   name: 'App',
@@ -193,6 +196,10 @@ export default {
       drawer: false,
       showBack: false,
     }
+  },
+  
+  components: {
+    Confirm,
   },
   
   computed: {
@@ -245,6 +252,28 @@ export default {
     
     clearError() {
       this.$store.commit('clearError')
+    },
+    
+    restart() {
+      this.$refs.confirm.open('Restart', 'Are you sure you want to restart the system?').then((confirm) => {
+        if (confirm)
+          this.$socket.emit('restart', (res) => {
+            if (res.error) {
+                this.$store.commit('setError', res.error)
+            }
+          })
+      })
+    },
+
+    shutdown() {
+      this.$refs.confirm.open('Shutdown', 'Are you sure you want to shutdown the system?').then((confirm) => {
+        if (confirm)
+          this.$socket.emit('shutdown', (res) => {
+            if (res.error) {
+                this.$store.commit('setError', res.error)
+            }
+          })
+      })
     },
     
   },

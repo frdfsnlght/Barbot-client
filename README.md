@@ -19,3 +19,11 @@ npm run build
 ```
 npm run lint
 ```
+
+## TODO
+* Controls
+* Admin login
+* Child lock/pin on order
+* Wifi setup
+* fix height of controls/ordes
+* change fonts to fonts-awesome svg

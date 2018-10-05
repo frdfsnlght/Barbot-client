@@ -14,7 +14,7 @@
           ripple
         >
           <v-list-tile-avatar>
-            <v-icon v-if="item.substate">mdi-run</v-icon>
+            <v-icon v-if="item.running">mdi-run</v-icon>
             <v-icon v-else-if="!item.state">mdi-power-off</v-icon>
             <v-icon v-else-if="item.state=='unloaded'">mdi-minus</v-icon>
             <v-icon v-else-if="item.state=='loaded'">mdi-plus</v-icon>
@@ -144,7 +144,7 @@
           <v-list-tile
             v-if="item.state=='ready'"
             ripple
-            @click="openMicroPrimePump()"
+            @click="openPrimePump()"
           >
             <v-list-tile-content>
               <v-list-tile-title>Prime</v-list-tile-title>
@@ -238,7 +238,6 @@ export default {
       this.menuX = e.clientX
       this.menuY = e.clientY
       this.menu = true
-      console.log('showMenu ' + this.item.id)
     },
   
     
@@ -259,12 +258,10 @@ export default {
     },
   
     openLoadPump() {
-      console.log('loadPump')
       this.$refs.pumpWizard.openLoad()
     },
   
     unloadPump() {
-      console.log('unloadPump')
       this.$socket.emit('unloadPump', this.item.id, (res) => {
         if (res.error) {
             this.$store.commit('setError', res.error)
@@ -273,17 +270,10 @@ export default {
     },
   
     openPrimePump() {
-      console.log('primePump')
       this.$refs.pumpWizard.openPrime()
     },
   
-    openMicroPrimePump() {
-      console.log('microPrimePump')
-      this.$refs.pumpWizard.openMicroPrime()
-    },
-  
     drainPump() {
-      console.log('drainPump')
       this.$socket.emit('drainPump', this.item.id, (res) => {
         if (res.error) {
             this.$store.commit('setError', res.error)
@@ -292,7 +282,6 @@ export default {
     },
   
     openCleanPump() {
-      console.log('cleanPump')
       this.$refs.pumpWizard.openClean()
     },
   

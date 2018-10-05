@@ -44,8 +44,8 @@ export default {
     }),
   },
   
-  created() {
-    console.log('select ingredient created')
+  mounted() {
+    console.log('select ingredient mounted')
     this.$store.dispatch('ingredients/loadAll')
   },
   

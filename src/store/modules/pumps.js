@@ -17,9 +17,7 @@ export default {
             })
         },
         anyPumpRunning(state) {
-            let i = state.items.find((e) => { return !!e.substate })
-            console.log('anyPumpRunning: ' + i)
-            // TODO: this is getting recalced when a pump is updated
+            let i = state.items.find((e) => { return e.running })
             return !!i
         },
     },
@@ -47,8 +45,8 @@ export default {
                 if (i) {
                     Object.assign(i, item)
                     //this.commit('showSnackbar', {text: 'Pump updated'}, {root: true})
-                    console.log('updated pump ' + item.id)
-                    console.dir(item)
+                    //console.log('updated pump ' + item.id)
+                    //console.dir(item)
                 }
             }
         },

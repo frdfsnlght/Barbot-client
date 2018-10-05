@@ -269,7 +269,6 @@ export default {
         if (confirm)
           this.$store.dispatch('drinks/delete', this.item)
       })
-      
     },
     
   },

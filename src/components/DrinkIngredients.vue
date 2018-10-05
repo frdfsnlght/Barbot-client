@@ -99,25 +99,20 @@
                 </v-flex>
 
                 <v-flex xs6>
-                  <v-select
-                    :items="['oz', 'ml']"
-                    label="Units"
+                  <select-units
                     v-model="item.units"
-                    :rules="[v => !!v || 'Units is required']"
                     required
-                  ></v-select>
+                    :rules="[v => !!v || 'Units is required']"
+                  ></select-units>
                 </v-flex>
                 
                 <v-flex xs12>
-                  <v-select
-                    :items="ingredients"
-                    item-text="name"
-                    item-value="id"
-                    label="Ingredient"
+                  <select-ingredient
                     v-model="item.ingredientId"
-                    :rules="[v => !!v || 'Ingredient is required']"
                     required
-                  ></v-select>
+                    :rules="[v => !!v || 'Ingredient is required']"
+                  ></select-ingredient>
+                
                 </v-flex>
 
               </v-layout>
@@ -143,7 +138,9 @@
 
 <script>
 
-import { mapGetters } from 'vuex'
+import { mapState } from 'vuex'
+import SelectIngredient from '../components/SelectIngredient'
+import SelectUnits from '../components/SelectUnits'
 
 
 export default {
@@ -167,6 +164,11 @@ export default {
     }
   },
   
+  components: {
+    SelectIngredient,
+    SelectUnits,
+  },
+  
   watch: {
     value: function(v) {
       this.items = v  // update when prop changes!
@@ -179,28 +181,35 @@ export default {
       return this.items.slice().sort((a, b) => {
         if (a.step < b.step) return -1
         if (a.step > b.step) return 1
-        return a.name.localeCompare(b.name, 'en', {'sensitivity': 'base'})
+        return a.ingredient.name.localeCompare(b.ingredient.name, 'en', {'sensitivity': 'base'})
       })
     },
-    
-    ...mapGetters({
-      ingredients: 'ingredients/sortedItems'
+    ...mapState({
+      defaultUnits: state => state.options.defaultUnits,
     }),
+    
   },
   
   methods: {
   
     addItem() {
       this.$refs.form.reset()
+      // find max step
+      let maxStep = 1
+      for (var i = 0; i < this.items.length; i++)
+        if (this.items[i].step > maxStep) maxStep = this.items[i].step
+      // find number of ingredients with maxStep
+      let stepIngs = this.items.filter(function(i) { return i.step == maxStep })
+      if (stepIngs.length >= 4) maxStep++
+        
       this.item = {
         id: null,
         ingredientId: undefined,
         amount: undefined,
-        units: 'oz',
-        step: 0,
+        units: this.defaultUnits,
+        step: maxStep,
       }
       this.editIndex = -1
-      this.$store.dispatch('ingredients/loadAll')
       this.dialog = true
     },
   
@@ -208,30 +217,36 @@ export default {
       this.$refs.form.reset()
       this.item = JSON.parse(JSON.stringify(item))
       this.editIndex = this.items.indexOf(item)
-      this.$store.dispatch('ingredients/loadAll')
       this.dialog = true
     },
   
     closeDialog() {
       this.dialog = false
-      this.$store.commit('ingredients/destroy')
       this.item = {}
     },
 
     saveItem() {
       if (! this.$refs.form.validate()) return
-      if (this.editIndex == -1) {
-        // adding a new item
-        // don't allow duplicate ingredients
-        if (this.items.find(item => item.ingredientId === this.item.ingredientId)) {
-          this.$store.commit('setError', 'This ingredient is already in the drink!')
-          return
-        }
-        this.item['ingredient'] = this.$store.getters['ingredients/getById'](this.item['ingredientId'])
-        this.items.push(JSON.parse(JSON.stringify(this.item)))
-      } else {
-        this.items.splice(this.editIndex, 1, JSON.parse(JSON.stringify(this.item)))
+      if (this.editIndex != -1) {
+        this.items.splice(this.editIndex, 1)
       }
+        
+      // don't allow duplicate ingredients
+      if (this.items.find(item => item.ingredientId === this.item.ingredientId)) {
+        this.$store.commit('setError', 'This ingredient is already in the drink!')
+        return
+      }
+        
+      // don't allow more than 4 ingredients in the same step
+      let step = this.item.step
+      let stepIngs = this.items.filter(function(i) { return i.step == step })
+      if (stepIngs.length >= 4) {
+        this.$store.commit('setError', 'There are already 4 ingredients in the same step!')
+        return
+      }
+        
+      this.item['ingredient'] = this.$store.getters['ingredients/getById'](this.item['ingredientId'])
+      this.items.push(JSON.parse(JSON.stringify(this.item)))
       this.closeDialog()
       console.dir(this.items)
       this.$emit('input', this.items)
