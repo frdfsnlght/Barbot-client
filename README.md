@@ -21,9 +21,13 @@ npm run lint
 ```
 
 ## TODO
-* Controls
-* Admin login
-* Child lock/pin on order
-* Wifi setup
-* fix height of controls/ordes
+* Main controls
+* Wifi Settings
+    * Add network
+    * Connect to network
+    * Forget network
+    * Network details
+    
+* fix height of controls/orders
 * change fonts to fonts-awesome svg
+# refactor code

@@ -13,7 +13,6 @@ export default {
         sortedItems(state) {
             return state.items.slice().sort((a, b) => {
                 return a.id - b.id
-                //return a.name.localeCompare(b.name, 'en', {'sensitivity': 'base'})
             })
         },
         anyPumpRunning(state) {

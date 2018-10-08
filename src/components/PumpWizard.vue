@@ -241,7 +241,7 @@ export default {
 
     openLoad() {
       this.$refs.loadForm.reset()
-      if (this.pump.state == 'unloaded') {
+      if (! this.pump.state) {
         this.isReload = false
         this.loadParams = {
           id: this.pump.id,

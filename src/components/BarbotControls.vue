@@ -3,6 +3,8 @@
     
     <h1 class="pa-3">Barbot Controls</h1>
     
+    <confirm ref="confirm"></confirm>
+    
   </v-card>
           
 </template>

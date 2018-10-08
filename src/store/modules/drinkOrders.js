@@ -52,7 +52,6 @@ export default {
         },
         
         socket_drinkOrderSaved(state, item) {
-            console.log('drinkOrderSaved')
             if (state.loadedWaiting) {
                 let o = state.items.find((e) => { return e.id === item.id })
                 if (o) {
@@ -144,6 +143,7 @@ export default {
             })
         },
         
+        /*
         submit({commit}, item) {
             return new Promise((resolve, reject) => {
                 Vue.prototype.$socket.emit('submitDrinkOrder', item, (res) => {
@@ -156,6 +156,9 @@ export default {
                 })
             })
         },
+        */
+        
+        // TODO: move these out to where they're used
         
         cancel({commit}, item) {
             return new Promise((resolve, reject) => {

@@ -36,7 +36,8 @@ export default new Vuex.Store({
         pumpSetup: false,
         dispensingDrink: {},
         glassReady: true,
-        
+        parentalLock: false,
+        user: {},
     },
     
     mutations: {
@@ -49,10 +50,9 @@ export default new Vuex.Store({
         
         socket_clientOptions(state, options) {
             state.options = options
-            if (options.isConsole !== 'auto') {
-                let newIsConsole = options.isConsole === 'true'
-                if (newIsConsole !== state.isConsole) {
-                    state.isConsole = newIsConsole
+            if (! options.autoConsole) {
+                if (options.isConsole !== state.isConsole) {
+                    state.isConsole = options.isConsole
                     console.log('Client is now ' + (state.isConsole ? '' : 'NOT ') + 'running as console.')
                 }
             }
@@ -84,6 +84,10 @@ export default new Vuex.Store({
             state.glassReady = glassReady
         },
 
+        socket_parentalLock(state, parentalLock) {
+            state.parentalLock = parentalLock
+        },
+
 
     
         setError(state, error) {
@@ -106,9 +110,18 @@ export default new Vuex.Store({
             state.snackbar = val
         },
         
+        setUser(state, user) {
+            if (user == false)
+                state.user = {}
+            else
+                state.user = user
+        },
+        
     },
     
     actions: {
+        
+        // TODO: move all these to where they're used
         
         toggleDispenserHold({commit}) {
             Vue.prototype.$socket.emit('toggleDispenserHold', (res) => {

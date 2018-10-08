@@ -86,12 +86,8 @@ export default {
     },
   
     orderDrink(item) {
-      this.$refs.orderDrink.open(item).then((order) => {
-        if (order)
-          this.$store.dispatch('drinkOrders/submit', order).then(() => {
-            this.$refs.orderDrink.close()
-            window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/')
-          })
+      this.$refs.orderDrink.open(item).then(() => {
+        window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/')
       })
     },
     

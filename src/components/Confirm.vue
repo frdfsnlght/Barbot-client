@@ -75,12 +75,12 @@
       },
 
       agree() {
-        this.resolve(true)
+        this.resolve()
         this.dialog = false
       },
 
       cancel() {
-        this.resolve(false)
+        this.reject()
         this.dialog = false
       }
     }

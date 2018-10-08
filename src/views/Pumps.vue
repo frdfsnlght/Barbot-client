@@ -16,7 +16,6 @@
           <v-list-tile-avatar>
             <v-icon v-if="item.running">mdi-run</v-icon>
             <v-icon v-else-if="!item.state">mdi-power-off</v-icon>
-            <v-icon v-else-if="item.state=='unloaded'">mdi-minus</v-icon>
             <v-icon v-else-if="item.state=='loaded'">mdi-plus</v-icon>
             <v-icon v-else-if="item.state=='ready'">mdi-check</v-icon>
             <v-icon v-else-if="item.state=='empty'">mdi-battery-outline</v-icon>
@@ -53,19 +52,6 @@
           <v-list-tile
             v-if="!item.state"
             ripple
-            @click="enablePump()"
-          >
-            <v-list-tile-content>
-              <v-list-tile-title>Enable</v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-              <v-icon>mdi-power</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
-
-          <v-list-tile
-            v-if="item.state=='unloaded'"
-            ripple
             @click="openLoadPump()"
           >
             <v-list-tile-content>
@@ -73,19 +59,6 @@
             </v-list-tile-content>
             <v-list-tile-action>
               <v-icon>mdi-plus</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
-
-          <v-list-tile
-            v-if="item.state=='unloaded'"
-            ripple
-            @click="disablePump()"
-          >
-            <v-list-tile-content>
-              <v-list-tile-title>Disable</v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-              <v-icon>mdi-power-off</v-icon>
             </v-list-tile-action>
           </v-list-tile>
 
@@ -155,7 +128,7 @@
           </v-list-tile>
           
           <v-list-tile
-            v-if="item.state=='dirty'"
+            v-if="!item.state || item.state=='dirty'"
             ripple
             @click="openCleanPump()"
           >
@@ -171,7 +144,6 @@
       </v-menu>
       
       <pump-wizard ref="pumpWizard" :pump="item"></pump-wizard>
-      <confirm ref="confirm"></confirm>
       
     </template>
     
@@ -182,8 +154,9 @@
 <script>
 
 import { mapState, mapGetters } from 'vuex'
+import store from '../store/store'
+import bus from '../bus'
 import Loading from '../components/Loading'
-import Confirm from '../components/Confirm'
 import PumpWizard from '../components/PumpWizard'
 
 export default {
@@ -198,11 +171,16 @@ export default {
   },
   components: {
     Loading,
-    Confirm,
     PumpWizard,
   },
+  
   created() {
     this.$emit('show-page', 'Pumps')
+    bus.$on('logout', this.onLogout)
+  },
+  
+  beforeDestroy: function () {
+    bus.$off('logout', this.onLogout)
   },
   
   computed: {
@@ -220,12 +198,12 @@ export default {
   methods: {
   
     itemIngredient(item) {
-      if (! item.ingredient) return '<empty>'
+      if (! item.ingredient) return '<no ingredient>'
       return item.amount + ' ' + item.units + ' ' + item.ingredient.name + ' (' + Math.round((item.amount / item.containerAmount) * 100)   + '%)'
     },
     
     itemState(item) {
-      if (! item.state) return '<disabled>'
+      if (! item.state) return '<unused>'
       return item.state
     },
     
@@ -238,23 +216,6 @@ export default {
       this.menuX = e.clientX
       this.menuY = e.clientY
       this.menu = true
-    },
-  
-    
-    enablePump() {
-      this.$socket.emit('enablePump', this.item.id, (res) => {
-        if (res.error) {
-            this.$store.commit('setError', res.error)
-        }
-      })
-    },
-  
-    disablePump() {
-      this.$socket.emit('disablePump', this.item.id, (res) => {
-        if (res.error) {
-            this.$store.commit('setError', res.error)
-        }
-      })
     },
   
     openLoadPump() {
@@ -285,20 +246,28 @@ export default {
       this.$refs.pumpWizard.openClean()
     },
   
+    onLogout() {
+      if (! ((store.state.options.pumpSetupRequiresAdmin == false) || store.state.user.isAdmin))
+        this.$router.replace({name: 'home'})
+    },
+    
   },
   
   beforeRouteEnter(to, from, next) {
-    next(t => {
-      if (t.isConsole)
-        t.$store.dispatch('startPumpSetup')
-      t.$store.dispatch('pumps/loadAll')
-    });
+    if (! ((store.state.options.pumpSetupRequiresAdmin == false) || store.state.user.isAdmin))
+      next({name: 'home'})
+    else
+      next(t => {
+        if (t.isConsole)
+          t.$store.dispatch('startPumpSetup')
+        t.$store.dispatch('pumps/loadAll')
+      })
   },
   
   beforeRouteLeave(to, from, next) {
     this.$store.commit('pumps/destroy')
     next()
-  }
+  },
   
 }
 

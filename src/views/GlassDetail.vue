@@ -21,6 +21,9 @@
         <v-list-tile
           v-for="drink in sortedDrinks"
           :key="drink.id"
+          ripple
+          avatar
+          @click="gotoDrinkDetail(drink.id)"
         >
           <v-list-tile-avatar>
             <v-icon v-if="drink.isFavorite">mdi-heart</v-icon>
@@ -79,6 +82,10 @@ export default {
   },
   
   methods: {
+    
+    gotoDrinkDetail(id) {
+      this.$router.push({name: 'drinkDetail', params: {id: id}})
+    },
     
   },
   

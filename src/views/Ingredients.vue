@@ -17,6 +17,7 @@
           <v-list-tile-avatar>
             <v-icon v-if="item.isAlcoholic">mdi-flash</v-icon>
             <v-icon v-else>mdi-baby-buggy</v-icon>
+            <v-icon v-if="item.isAvailable">mdi-gas-station</v-icon>
           </v-list-tile-avatar>
           
           <v-list-tile-content>
@@ -213,9 +214,8 @@ export default {
     },
     
     deleteItem() {
-      this.$refs.confirm.open('Delete', 'Are you sure you want to delete "' + this.item.name + '"?').then((confirm) => {
-        if (confirm)
-          this.$store.dispatch('ingredients/delete', this.item)
+      this.$refs.confirm.open('Delete', 'Are you sure you want to delete "' + this.item.name + '"?').then(() => {
+        this.$store.dispatch('ingredients/delete', this.item)
       })
       
     },

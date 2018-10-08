@@ -15,6 +15,10 @@
         v-else
         class="px-3 subheading">Non-alcoholic</p>
 
+      <p
+        v-if="item.isAvailable"
+        class="px-3 subheading">This ingredient is currently available.</p>
+
       <p class="px-3 subheading">Amount dispensed: {{amountDispensedML}} ml / {{amountDispensedOZ}} oz</p>
       <p class="px-3 subheading">Times dispensed: {{timesDispensed}}</p>
         
@@ -30,6 +34,9 @@
         <v-list-tile
           v-for="di in sortedDrinks"
           :key="di.drink.id"
+          ripple
+          avatar
+          @click="gotoDrinkDetail(di.drinkId)"
         >
           <v-list-tile-avatar>
             <v-icon v-if="di.drink.isFavorite">mdi-heart</v-icon>
@@ -99,6 +106,10 @@ export default {
   },
   
   methods: {
+    
+    gotoDrinkDetail(id) {
+      this.$router.push({name: 'drinkDetail', params: {id: id}})
+    },
     
   },
   

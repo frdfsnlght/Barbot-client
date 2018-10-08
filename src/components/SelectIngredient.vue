@@ -45,12 +45,10 @@ export default {
   },
   
   mounted() {
-    console.log('select ingredient mounted')
     this.$store.dispatch('ingredients/loadAll')
   },
   
   destroyed() {
-    console.log('select ingredient destroyed')
     this.$store.commit('ingredients/destroy')
   },
   

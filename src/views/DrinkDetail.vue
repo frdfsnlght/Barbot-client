@@ -19,6 +19,10 @@
         v-if="item.isFavorite"
         class="px-3 subheading">This drink is a favorite</p>
 
+      <p
+        v-if="item.isOnMenu"
+        class="px-3 subheading">This drink is on the menu</p>
+
       <p class="px-3 subheading">Times dispensed: {{timesDispensed}}</p>
         
       <p class="px-3 subheading">Glass: {{glassName}}</p>
@@ -30,10 +34,14 @@
         <v-list-tile
           v-for="di in sortedIngredients"
           :key="di.ingredient.id"
+          ripple
+          avatar
+          @click="gotoIngredientDetail(di.ingredientId)"
         >
           <v-list-tile-avatar>
             <v-icon v-if="di.ingredient.isAlcoholic">mdi-flash</v-icon>
             <v-icon v-else>mdi-baby-buggy</v-icon>
+            <v-icon v-if="di.ingredient.isAvailable">mdi-gas-station</v-icon>
           </v-list-tile-avatar>
 
           <v-list-tile-content>
@@ -120,14 +128,14 @@ export default {
   
   methods: {
     
+    gotoIngredientDetail(id) {
+      this.$router.push({name: 'ingredientDetail', params: {id: id}})
+    },
+    
     orderDrink() {
-      this.$refs.orderDrink.open(this.item).then((order) => {
-        if (order)
-          this.$store.dispatch('drinkOrders/submit', order).then(() => {
-            this.$refs.orderDrink.close()
-            if (this.locationHistory)
-              this.$router.go(-2)
-          })
+      this.$refs.orderDrink.open(this.item).then(() => {
+        if (this.locationHistory)
+          this.$router.go(-2)
       })
     },
     

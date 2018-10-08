@@ -168,9 +168,8 @@ export default {
     },
     
     cancelItem() {
-      this.$refs.confirm.open('Cancel', 'Are you sure you want to cancel this order?', {rejectText: 'No'}).then((confirm) => {
-        if (confirm)
-          this.$store.dispatch('drinkOrders/cancel', this.item)
+      this.$refs.confirm.open('Cancel', 'Are you sure you want to cancel this order?', {rejectText: 'No'}).then(() => {
+        this.$store.dispatch('drinkOrders/cancel', this.item)
       })
       
     },

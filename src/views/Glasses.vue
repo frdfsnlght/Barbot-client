@@ -230,8 +230,7 @@ export default {
     },
     
     deleteItem() {
-      this.$refs.confirm.open('Delete', 'Are you sure you want to delete "' + this.item.size + ' ' + this.item.units + ' ' + this.item.type + '"?').then((confirm) => {
-        if (confirm)
+      this.$refs.confirm.open('Delete', 'Are you sure you want to delete "' + this.item.size + ' ' + this.item.units + ' ' + this.item.type + '"?').then(() => {
           this.$store.dispatch('glasses/delete', this.item)
       })
     },

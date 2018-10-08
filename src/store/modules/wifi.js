@@ -4,7 +4,7 @@ export default {
     namespaced: true,
     
     state: {
-        state: 'n/a',
+        state: false,
         networks: [],
         networksLoading: false,
         networksLoaded: false,
@@ -12,7 +12,16 @@ export default {
     
     getters: {
         sortedNetworks: (state) => {
-            return state.networks
+            //return state.networks.filter((n) => {return !n.connected}).sort((a, b) => {
+            return state.networks.slice().sort((a, b) => {
+                if (a.connected) return -1
+                if (b.connected) return 1
+                if (!a.saved && b.saved) return -1
+                if (a.saved && !b.saved) return 1
+                if (a.bars > b.bars) return -1
+                if (a.bars < b.bars) return 1
+                return a.ssid.localeCompare(b.ssid, 'en', {'sensitivity': 'base'})
+            })
         }
     },
   
@@ -28,6 +37,7 @@ export default {
             state.networksLoading = false
             state.networksloaded = true
             console.log('loaded ' + networks.length + ' networks')
+            console.dir(networks)
         },
         
         destroyNetworks(state) {
