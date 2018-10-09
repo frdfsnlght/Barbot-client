@@ -22,12 +22,12 @@ npm run lint
 
 ## TODO
 * Main controls
-* Wifi Settings
-    * Add network
-    * Connect to network
-    * Forget network
-    * Network details
-    
+* About page
+    * attribution for icons?
+    * git commit hash/date
+    * vue build date
+    * copyright notice
+
 * fix height of controls/orders
 * change fonts to fonts-awesome svg
 # refactor code

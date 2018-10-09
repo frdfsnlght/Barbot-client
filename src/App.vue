@@ -95,14 +95,14 @@
       <v-toolbar-title>{{title}}</v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <v-btn v-if="showWifi" icon>
+      <template v-if="showWifi">
         <v-icon v-if="!wifiState.ssid">mdi-wifi-off</v-icon>
         <v-icon v-else-if="wifiState.bars === 0">mdi-wifi-strength-outline</v-icon>
         <v-icon v-else-if="wifiState.bars === 1">mdi-wifi-strength-1</v-icon>
         <v-icon v-else-if="wifiState.bars === 2">mdi-wifi-strength-2</v-icon>
         <v-icon v-else-if="wifiState.bars === 3">mdi-wifi-strength-3</v-icon>
         <v-icon v-else-if="wifiState.bars === 4">mdi-wifi-strength-4</v-icon>
-      </v-btn>
+      </template>
       
       <v-btn v-if="user.name" icon @click="logout()">
         <v-icon>mdi-logout</v-icon>
@@ -329,7 +329,11 @@ export default {
       console.log('Client is running as console.')
     else
       console.log('Client is running as remote.')
-  }
+  },
+  
+  mounted() {
+    this.$store.dispatch('pumps/loadAll')
+  },
   
 }
 </script>

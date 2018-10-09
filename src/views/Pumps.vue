@@ -260,12 +260,12 @@ export default {
       next(t => {
         if (t.isConsole)
           t.$store.dispatch('startPumpSetup')
-        t.$store.dispatch('pumps/loadAll')
+//        t.$store.dispatch('pumps/loadAll')
       })
   },
   
   beforeRouteLeave(to, from, next) {
-    this.$store.commit('pumps/destroy')
+//    this.$store.commit('pumps/destroy')
     next()
   },
   

@@ -32,9 +32,8 @@ export default new Vuex.Store({
         snackbarText: '',
         isConsole: location.hostname === 'localhost',
         dispenserHold: false,
-        dispenserState: 'idle',
+        dispenserState: {},
         pumpSetup: false,
-        dispensingDrink: {},
         glassReady: true,
         parentalLock: false,
         user: {},
@@ -63,21 +62,13 @@ export default new Vuex.Store({
         },
     
         socket_dispenserState(state, dispenserState) {
+            console.log('dispenserState:')
+            console.dir(dispenserState)
             state.dispenserState = dispenserState
         },
     
         socket_pumpSetup(state, pumpSetup) {
             state.pumpSetup = pumpSetup
-        },
-
-        socket_dispensingDrinkOrder(state, drink) {
-            state.dispensingDrink = drink
-        },
-    
-        // eslint-disable-next-line
-        socket_drinkOrderCompleted(state, drink) {
-            state.dispensingDrink = {}
-            
         },
 
         socket_glassReady(state, glassReady) {
