@@ -1,13 +1,13 @@
 <template>
 
   <v-container fluid fill-height pa-0>
-    <v-layout column>
+    <v-layout column justify-start fill-height color="pink">
     
       <v-flex>
         <barbot-controls ref="barbotControls"></barbot-controls>
       </v-flex>
       
-      <v-flex>
+      <v-flex fill-height>
         <drink-orders ref="drinkOrders"></drink-orders>
       </v-flex>
       

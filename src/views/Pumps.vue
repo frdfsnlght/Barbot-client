@@ -199,7 +199,7 @@ export default {
   
     itemIngredient(item) {
       if (! item.ingredient) return '<no ingredient>'
-      return item.amount + ' ' + item.units + ' ' + item.ingredient.name + ' (' + Math.round((item.amount / item.containerAmount) * 100)   + '%)'
+      return item.amount.toFixed() + ' ' + item.units + ' ' + item.ingredient.name + ' (' + Math.round((item.amount / item.containerAmount) * 100)   + '%)'
     },
     
     itemState(item) {

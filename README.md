@@ -21,13 +21,10 @@ npm run lint
 ```
 
 ## TODO
-* Main controls
 * About page
     * attribution for icons?
     * git commit hash/date
     * vue build date
     * copyright notice
-
-* fix height of controls/orders
-* change fonts to fonts-awesome svg
+* change fonts to fonts-awesome svg?
 # refactor code

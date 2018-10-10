@@ -32,7 +32,7 @@ export default new Vuex.Store({
         snackbarText: '',
         isConsole: location.hostname === 'localhost',
         dispenserHold: false,
-        dispenserState: {},
+        dispenseState: {},
         pumpSetup: false,
         glassReady: true,
         parentalLock: false,
@@ -61,10 +61,10 @@ export default new Vuex.Store({
             state.dispenserHold = dispenserHold
         },
     
-        socket_dispenserState(state, dispenserState) {
-            console.log('dispenserState:')
-            console.dir(dispenserState)
-            state.dispenserState = dispenserState
+        socket_dispenseState(state, dispenseState) {
+            console.log('dispenseState:')
+            console.dir(dispenseState)
+            state.dispenseState = dispenseState
         },
     
         socket_pumpSetup(state, pumpSetup) {
