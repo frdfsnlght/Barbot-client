@@ -12,15 +12,15 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 Vue.use(VueSocketio, io(loc), {
-        store,
-        actionPrefix: 'socket_',
-        eventToActionTransformer: (ev) => {
-            return ev
-        },
-        mutationPrefix: 'socket_',
-        eventToMutationTransformer: (ev) => {
-            return ev
-        },
+    store,
+    actionPrefix: 'socket_',
+    eventToActionTransformer: (ev) => {
+        return ev
+    },
+    mutationPrefix: 'socket_',
+    eventToMutationTransformer: (ev) => {
+        return ev
+    },
 });
 
 // eslint-disable-next-line

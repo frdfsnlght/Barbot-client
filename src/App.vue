@@ -163,6 +163,7 @@
     
     <confirm ref="confirm"></confirm>
     <login ref="login"></login>
+    <audio-player ref="audioPlayer"></audio-player>
     
     <v-snackbar
       v-model="snackbar"
@@ -189,6 +190,7 @@ import bus from './bus'
 import HTMLTitle from './components/HTMLTitle'
 import Confirm from './components/Confirm'
 import Login from './components/Login'
+import AudioPlayer from './components/AudioPlayer'
 
 export default {
   name: 'App',
@@ -204,6 +206,7 @@ export default {
     'html-title': HTMLTitle,
     Confirm,
     Login,
+    AudioPlayer,
   },
   
   computed: {
