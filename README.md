@@ -1,4 +1,5 @@
 # Barbot-client
+Barbot's client.
 
 ## Project setup
 ```
@@ -26,5 +27,8 @@ npm run lint
     * git commit hash/date
     * vue build date
     * copyright notice
+    
+* refactor code
+* test console/non-console behaviour
+
 * change fonts to fonts-awesome svg?
-# refactor code

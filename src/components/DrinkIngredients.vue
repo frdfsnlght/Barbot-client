@@ -141,6 +141,8 @@
 import { mapState } from 'vuex'
 import SelectIngredient from '../components/SelectIngredient'
 import SelectUnits from '../components/SelectUnits'
+//import { toML, convertUnits } from '../utils'
+import utils from '../utils'
 
 
 export default {
@@ -186,6 +188,7 @@ export default {
     },
     ...mapState({
       defaultUnits: state => state.options.defaultUnits,
+      drinkSizeLimit: state => state.options.drinkSizeLimit,
     }),
     
   },
@@ -231,6 +234,8 @@ export default {
         this.items.splice(this.editIndex, 1)
       }
         
+      console.log('drinkSizeLimit: ' + this.drinkSizeLimit)
+      
       // don't allow duplicate ingredients
       if (this.items.find(item => item.ingredientId === this.item.ingredientId)) {
         this.$store.commit('setError', 'This ingredient is already in the drink!')
@@ -245,6 +250,17 @@ export default {
         return
       }
         
+      // don't allow more ingredients than configured
+      let totalMLs = utils.toML(this.item.amount, this.item.units)
+      this.items.forEach((i) => { totalMLs += utils.toML(i.amount, i.units) })
+      if (totalMLs > this.drinkSizeLimit) {
+        this.$store.commit('setError',
+          'Drink ingredients exceed configured limit of ' +
+            utils.convertUnits(this.drinkSizeLimit, 'ml', this.defaultUnits).toFixed() + ' ' +
+            this.defaultUnits)
+        return
+      }
+      
       this.item['ingredient'] = this.$store.getters['ingredients/getById'](this.item['ingredientId'])
       this.items.push(JSON.parse(JSON.stringify(this.item)))
       this.closeDialog()

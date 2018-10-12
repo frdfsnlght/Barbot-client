@@ -23,85 +23,114 @@
           </p>
         </div>
         
-        <div v-if="dispenseState.state == 'start'">
-          <p :class="'subheading ' + (glassReady ? '' : 'red--text')">
-            Insert a {{dispenseState.order.drink.glass.name}} glass.
-            <v-icon v-if="glassReady" class="green--text">mdi-check</v-icon>
-          </p>
-          <v-btn
-            color="green"
-            large
-            class="px-5"
-            :loading="!glassReady"
-            :disabled="!glassReady || clicked"
-            @click="dispenseControl('start')"
-          >
-            start
-            <span slot="loader">Waiting...</span>
-          </v-btn>
-          <v-btn
-            color="red"
-            large
-            class="px-5"
-            :disabled="clicked"
-            @click="dispenseControl('cancel')"
-          >
-            cancel
-          </v-btn>
-        </div>
-
-        <div v-if="dispenseState.state == 'dispense'">
-          <p class="title">
-            Dispensing...
-          </p>
-          <v-btn
-            color="red"
-            large
-            class="px-5"
-            :disabled="clicked"
-            @click="dispenseControl('cancel')"
-          >
-            cancel
-          </v-btn>
-        </div>
+        <template v-if="isConsole">
         
-        <div v-if="dispenseState.state == 'glassClear'">
-          <p class="title">
-            The glass was removed.
-          </p>
-          <p class="title">
-            The drink order has been put on hold.
-          </p>
-          <v-btn
-            color="primary"
-            large
-            class="px-5"
-            @click="dispenseControl('ok')"
-          >
-            ok
-          </v-btn>
-        </div>
+          <div v-if="dispenseState.state == 'start'">
+            <p :class="'subheading ' + (glassReady ? '' : 'red--text')">
+              Insert a {{dispenseState.order.drink.glass.name}} glass.
+              <v-icon v-if="glassReady" class="green--text">mdi-check</v-icon>
+            </p>
+            <v-btn
+              color="green"
+              large
+              class="px-5"
+              :loading="!glassReady"
+              :disabled="!glassReady || clicked"
+              @click="dispenseControl('start')"
+            >
+              start
+              <span slot="loader">Waiting...</span>
+            </v-btn>
+            <v-btn
+              color="red"
+              large
+              class="px-5"
+              :disabled="clicked"
+              @click="dispenseControl('cancel')"
+            >
+              cancel
+            </v-btn>
+          </div>
 
-        <div v-if="dispenseState.state == 'cancelClear'">
-          <p class="title">
-            Dispensing was cancelled.
-          </p>
-          <p class="title">
-            The drink order has been put on hold.
-          </p>
-          <p class="title">
-            Please remove the glass.
-          </p>
-        </div>
+          <div v-if="dispenseState.state == 'dispense'">
+            <p class="title">
+              Dispensing...
+            </p>
+            <v-btn
+              color="red"
+              large
+              class="px-5"
+              :disabled="clicked"
+              @click="dispenseControl('cancel')"
+            >
+              cancel
+            </v-btn>
+          </div>
+          
+          <div v-if="dispenseState.state == 'glassClear'">
+            <p class="title">
+              The glass was removed.
+            </p>
+            <p class="title">
+              The drink order has been put on hold.
+            </p>
+            <v-btn
+              color="primary"
+              large
+              class="px-5"
+              @click="dispenseControl('ok')"
+            >
+              ok
+            </v-btn>
+          </div>
+
+          <div v-if="dispenseState.state == 'cancelClear'">
+            <p class="title">
+              Dispensing was cancelled.
+            </p>
+            <p class="title">
+              The drink order has been put on hold.
+            </p>
+            <p class="title">
+              Please remove the glass.
+            </p>
+          </div>
+
+          <div v-if="dispenseState.state == 'pickup'">
+            <p class="title">
+              Drink is complete.
+            </p>
+            <p class="title">
+              Please remove the glass.
+            </p>
+          </div>
+          
+        </template>
         
-        <div v-if="dispenseState.state == 'pickup'">
-          <p class="title">
-            Drink is complete.
-          </p>
-          <p class="title">
-            Please remove the glass.
-          </p>
-        </div>
+        <template v-else>
+
+          <div v-if="dispenseState.state && dispenseState.state != 'pickup'">
+            <p class="title">
+              Dispensing...
+            </p>
+            <v-btn
+              color="red"
+              large
+              class="px-5"
+              :disabled="clicked"
+              @click="dispenseControl('cancel')"
+            >
+              cancel
+            </v-btn>
+          </div>
+        
+          <div v-if="dispenseState.state == 'pickup'">
+            <p class="title">
+              Drink is complete.
+            </p>
+          </div>
+        
+        </template>
         
       </v-layout>
 
@@ -149,6 +178,7 @@ export default {
       pumps: 'pumps/sortedItems',
     }),
     ...mapState([
+      'isConsole',
       'dispenseState',
       'glassReady',
     ])

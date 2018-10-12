@@ -49,6 +49,7 @@ export default new Vuex.Store({
         
         socket_clientOptions(state, options) {
             state.options = options
+            console.dir(options)
             if (! options.autoConsole) {
                 if (options.isConsole !== state.isConsole) {
                     state.isConsole = options.isConsole
