@@ -95,7 +95,7 @@
       <v-toolbar-title>{{title}}</v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <template v-if="showWifi">
+      <template v-if="isConsole && wifiState">
         <v-icon v-if="!wifiState.ssid">mdi-wifi-off</v-icon>
         <v-icon v-else-if="wifiState.bars === 0">mdi-wifi-strength-outline</v-icon>
         <v-icon v-else-if="wifiState.bars === 1">mdi-wifi-strength-1</v-icon>
@@ -103,7 +103,37 @@
         <v-icon v-else-if="wifiState.bars === 3">mdi-wifi-strength-3</v-icon>
         <v-icon v-else-if="wifiState.bars === 4">mdi-wifi-strength-4</v-icon>
       </template>
-      
+
+      <v-menu
+        v-if="isConsole"
+        bottom left
+        offset-y
+        :close-on-content-click="false"
+      >
+        <v-btn
+          slot="activator"
+          dark
+          icon
+        >
+          <v-icon v-if="volume < 0.33">mdi-volume-low</v-icon>
+          <v-icon v-else-if="volume >= 0.33 && volume < 0.66">mdi-volume-medium</v-icon>
+          <v-icon v-else>mdi-volume-high</v-icon>
+        </v-btn>
+        <v-list>
+          <v-list-tile>
+            <v-slider
+              v-model="volume"
+              min="0"
+              max="1"
+              step="0.05"
+              prepend-icon="mdi-minus"              
+              append-icon="mdi-plus"
+              @end="changeVolume"
+            ></v-slider>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
+          
       <v-btn v-if="user.name" icon @click="logout()">
         <v-icon>mdi-logout</v-icon>
       </v-btn>
@@ -199,6 +229,7 @@ export default {
       pageTitle: false,
       drawer: false,
       showBack: false,
+      volume: 1,
     }
   },
   
@@ -211,7 +242,7 @@ export default {
   
   computed: {
     title () {
-      return this.appTitle + (this.pageTitle ? (": " + this.pageTitle) : "");
+      return this.options.appTitle + (this.pageTitle ? (": " + this.pageTitle) : "");
     },
     connectingDialog() {
       return !this.$store.state.connected
@@ -224,10 +255,8 @@ export default {
         this.$store.commit('setSnackbar', newValue)
       },
     },
-    showWifi() {
-        return this.isConsole && this.wifiState
-    },
     ...mapState([
+      'options',
       'isConsole',
       'error',
       'errorMsg',
@@ -236,9 +265,14 @@ export default {
       'user',
     ]),
     ...mapState({
-      appTitle: state => state.options.appTitle,
       wifiState: state => state.wifi.state
     }),
+  },
+  
+  watch: {
+    options: function(v) {
+      this.volume = v.defaultVolume
+    },
   },
   
   methods: {
@@ -317,6 +351,10 @@ export default {
     
     clearError() {
       this.$store.commit('clearError')
+    },
+    
+    changeVolume: function(v) {
+      this.$refs.audioPlayer.setVolume(v)
     },
     
     checkAdmin(opt) {
