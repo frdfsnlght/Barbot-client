@@ -29,6 +29,6 @@ npm run lint
     * copyright notice
     
 * refactor code
-* test console/non-console behaviour
+* test console/non-console behavior
 
 * change fonts to fonts-awesome svg?

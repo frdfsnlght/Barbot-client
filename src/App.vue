@@ -56,14 +56,14 @@
             </v-list-tile-action>
           </v-list-tile>
 
-          <v-list-tile @click="restart()">
+          <v-list-tile @click="checkRestart()">
             <v-list-tile-title>Restart</v-list-tile-title>
             <v-list-tile-action>
               <v-icon>mdi-restart</v-icon>
             </v-list-tile-action>
           </v-list-tile>
 
-          <v-list-tile @click="shutdown()">
+          <v-list-tile @click="checkShutdown()">
             <v-list-tile-title>Shutdown</v-list-tile-title>
             <v-list-tile-action>
               <v-icon>mdi-power</v-icon>
@@ -312,28 +312,32 @@ export default {
       })
     },
 
-    restart() {
+    checkRestart() {
       this.drawer = false
-      this.checkAdmin('restartRequiresAdmin').then(() => {
-        this.$refs.confirm.open('Restart', 'Are you sure you want to restart the system?').then(() => {
-          this.$socket.emit('restart', (res) => {
-            if (res.error) {
-                this.$store.commit('setError', res.error)
-            }
-          })
+      this.checkAdmin('restartRequiresAdmin').then(this.restart)
+    },
+
+    checkShutdown() {
+      this.drawer = false
+      this.checkAdmin('shutdownRequiresAdmin').then(this.shutdown)
+    },
+
+    restart() {
+      this.$refs.confirm.open('Restart', 'Are you sure you want to restart the system?').then(() => {
+        this.$socket.emit('restart', (res) => {
+          if (res.error) {
+              this.$store.commit('setError', res.error)
+          }
         })
       })
     },
-
+    
     shutdown() {
-      this.drawer = false
-      this.checkAdmin('shutdownRequiresAdmin').then(() => {
-        this.$refs.confirm.open('Shutdown', 'Are you sure you want to shutdown the system?').then(() => {
-          this.$socket.emit('shutdown', (res) => {
-            if (res.error) {
-                this.$store.commit('setError', res.error)
-            }
-          })
+      this.$refs.confirm.open('Shutdown', 'Are you sure you want to shutdown the system?').then(() => {
+        this.$socket.emit('shutdown', (res) => {
+          if (res.error) {
+              this.$store.commit('setError', res.error)
+          }
         })
       })
     },
@@ -364,6 +368,13 @@ export default {
     },
     
   },
+  
+  sockets: {
+    shutdownRequest() {
+      if (this.isConsole)
+        this.shutdown()
+    }
+  },  
   
   created() {
     if (this.isConsole)
