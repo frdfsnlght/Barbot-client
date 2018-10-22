@@ -8,7 +8,7 @@
       </v-flex>
       
       <v-flex fill-height>
-        <drink-orders ref="drinkOrders"></drink-orders>
+        <drink-orders></drink-orders>
       </v-flex>
       
     </v-layout>
@@ -46,14 +46,17 @@ export default {
   
   beforeRouteEnter(to, from, next) {
     next(t => {
-      if (t.isConsole)
-        t.$store.dispatch('stopPumpSetup')
-      t.$refs.drinkOrders.loadOrders()
+      if (t.isConsole) {
+        t.$socket.emit('stopPumpSetup', (res) => {
+          if (res.error) {
+            t.$store.commit('setError', res.error)
+          }
+        })
+      }
     })
   },
   
   beforeRouteLeave(to, from, next) {
-    this.$refs.drinkOrders.unloadOrders()
     next()
   }
   

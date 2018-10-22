@@ -229,7 +229,6 @@ export default {
       pageTitle: false,
       drawer: false,
       showBack: false,
-      volume: 1,
     }
   },
   
@@ -255,6 +254,14 @@ export default {
         this.$store.commit('setSnackbar', newValue)
       },
     },
+    volume: {
+      get: function() {
+        return this.$store.state.volume
+      },
+      set: function() {
+        // nop
+      },
+    },
     ...mapState([
       'options',
       'isConsole',
@@ -267,12 +274,6 @@ export default {
     ...mapState({
       wifiState: state => state.wifi.state
     }),
-  },
-  
-  watch: {
-    options: function(v) {
-      this.volume = v.defaultVolume
-    },
   },
   
   methods: {

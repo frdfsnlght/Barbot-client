@@ -114,32 +114,6 @@ export default {
             })
         },
         
-        save({commit}, item) {
-            return new Promise((resolve, reject) => {
-                Vue.prototype.$socket.emit('saveGlass', item, (res) => {
-                    if (res.error) {
-                        commit('setError', res.error, {root: true})
-                        reject()
-                    } else {
-                        resolve()
-                    }
-                })
-            })
-        },
-        
-        delete({commit}, item) {
-            return new Promise((resolve, reject) => {
-                Vue.prototype.$socket.emit('deleteGlass', item.id, (res) => {
-                    if (res.error) {
-                        commit('setError', res.error, {root: true})
-                        reject()
-                    } else {
-                        resolve()
-                    }
-                })
-            })
-        },
-        
     }
     
 }

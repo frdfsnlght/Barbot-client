@@ -258,14 +258,17 @@ export default {
       next({name: 'home'})
     else
       next(t => {
-        if (t.isConsole)
-          t.$store.dispatch('startPumpSetup')
-//        t.$store.dispatch('pumps/loadAll')
+        if (t.isConsole) {
+          t.$socket.emit('startPumpSetup', (res) => {
+            if (res.error) {
+              t.$store.commit('setError', res.error)
+            }
+          })
+        }
       })
   },
   
   beforeRouteLeave(to, from, next) {
-//    this.$store.commit('pumps/destroy')
     next()
   },
   

@@ -260,14 +260,22 @@ export default {
         this.$store.commit('setError', 'At least one ingredient is required!')
         return
       }
-      this.$store.dispatch('drinks/save', this.item).then(() => {
-        this.closeDialog()
+      this.$socket.emit('saveDrink', this.item, (res) => {
+        if (res.error) {
+          this.$store.commit('setError', res.error)
+        } else {
+          this.closeDialog()
+        }
       })
     },
     
     deleteItem() {
       this.$refs.confirm.open('Delete', 'Are you sure you want to delete "' + this.item.name + '"?').then(() => {
-        this.$store.dispatch('drinks/delete', this.item)
+        this.$socket.emit('deleteDrink', this.item.id, (res) => {
+          if (res.error) {
+            this.$store.commit('setError', res.error)
+          }
+        })
       })
     },
     

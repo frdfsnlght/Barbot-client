@@ -82,21 +82,6 @@ export default {
             })
         },
         
-        /*
-        submitOrder({commit}, item) {
-            return new Promise((resolve, reject) => {
-                Vue.prototype.$socket.emit('submitDrinkOrder', item, (res) => {
-                    if (res.error) {
-                        commit('setError', res.error, {root: true})
-                        reject()
-                    } else {
-                        resolve()
-                    }
-                })
-            })
-        },
-        */
-        
     }
     
 }

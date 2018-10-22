@@ -12,7 +12,6 @@ export default {
     
     getters: {
         sortedNetworks: (state) => {
-            //return state.networks.filter((n) => {return !n.connected}).sort((a, b) => {
             return state.networks.slice().sort((a, b) => {
                 if (a.connected) return -1
                 if (b.connected) return 1
@@ -26,6 +25,7 @@ export default {
     },
   
     mutations: {
+        
         networksLoading(state) {
             state.networksLoading = true
             state.networksLoaded = false
@@ -48,8 +48,6 @@ export default {
         
         socket_wifiState(state, wifi) {
             state.state = wifi
-            //console.log('wifiState is now:')
-            //console.dir(wifi)
         },
         
     },

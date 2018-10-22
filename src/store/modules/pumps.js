@@ -43,9 +43,6 @@ export default {
                 let i = state.items.find((e) => { return e.id === item.id })
                 if (i) {
                     Object.assign(i, item)
-                    //this.commit('showSnackbar', {text: 'Pump updated'}, {root: true})
-                    //console.log('updated pump ' + item.id)
-                    //console.dir(item)
                 }
             }
         },

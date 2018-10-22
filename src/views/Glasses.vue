@@ -224,14 +224,22 @@ export default {
     
     saveItem() {
       if (! this.$refs.form.validate()) return
-      this.$store.dispatch('glasses/save', this.item).then(() => {
-        this.closeDialog()
+      this.$socket.emit('saveGlass', this.item, (res) => {
+        if (res.error) {
+          this.$store.commit('setError', res.error)
+        } else {
+          this.closeDialog()
+        }
       })
     },
     
     deleteItem() {
       this.$refs.confirm.open('Delete', 'Are you sure you want to delete "' + this.item.size + ' ' + this.item.units + ' ' + this.item.type + '"?').then(() => {
-          this.$store.dispatch('glasses/delete', this.item)
+        this.$socket.emit('deleteGlass', this.item.id, (res) => {
+          if (res.error) {
+            this.$store.commit('setError', res.error)
+          }
+        })
       })
     },
     

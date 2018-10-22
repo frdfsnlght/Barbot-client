@@ -1,19 +1,20 @@
+<template>
+  <audio ref="volumeEl" src="../assets/volume.wav" type="audio/wav"></audio>
+</template>
+
 <script>
+
+import { mapState } from 'vuex'
 
 export default {
   name: 'AudioPlayer',
   
-  props: {
-    volumeFile: {
-      type: String,
-      default: 'volume.wav',
-    }
+  computed: {
+    ...mapState([
+      'volume',
+    ]),
   },
-  
-  data: () => ({
-    volume: 1,
-  }),
-
+      
   methods: {
     play(file) {
       let audio = new Audio(this.$socket.io.uri + '/audio/' + file)
@@ -22,8 +23,19 @@ export default {
     },
     
     setVolume(volume, play = true) {
-      this.volume = volume
-      if (play) this.play(this.volumeFile)
+      this.$socket.emit('setVolume', volume, (res) => {
+        if (res.error) {
+          this.$store.commit('setError', res.error)          
+        } else if (play) {
+          let a = this.$refs.volumeEl
+          if (! a.ended) {
+            a.pause()
+            a.currentTime = 0
+          }
+          a.volume = this.volume
+          a.play()
+        }
+      })
     }
   },
   

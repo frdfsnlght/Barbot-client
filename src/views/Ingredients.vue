@@ -208,16 +208,23 @@ export default {
     
     saveItem() {
       if (! this.$refs.form.validate()) return
-      this.$store.dispatch('ingredients/save', this.item).then(() => {
-        this.closeDialog()
+      this.$socket.emit('saveIngredient', this.item, (res) => {
+        if (res.error) {
+          this.$store.commit('setError', res.error)
+        } else {
+          this.closeDialog()
+        }
       })
     },
     
     deleteItem() {
       this.$refs.confirm.open('Delete', 'Are you sure you want to delete "' + this.item.name + '"?').then(() => {
-        this.$store.dispatch('ingredients/delete', this.item)
+        this.$socket.emit('deleteIngredient', this.item.id, (res) => {
+          if (res.error) {
+            this.$store.commit('setError', res.error)
+          }
+        })
       })
-      
     },
     
   },

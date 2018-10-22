@@ -142,6 +142,14 @@ export default {
     })
   },
   
+  created() {
+    this.$store.dispatch('drinkOrders/loadWaiting')
+  },
+  
+  destroyed() {
+    this.$store.commit('drinkOrders/destroy')
+  },
+  
   methods: {
   
     itemDetail(item) {
@@ -149,7 +157,11 @@ export default {
     },
 
     toggleDispenserHold() {
-      this.$store.dispatch('toggleDispenserHold')
+      this.$socket.emit('toggleDispenserHold', (res) => {
+          if (res.error) {
+              this.$store.commit('setError', res.error)
+          }
+      })
     },
     
     showMenu(item, e) {
@@ -164,22 +176,21 @@ export default {
     },
   
     toggleHoldItem() {
-      this.$store.dispatch('drinkOrders/toggleHold', this.item)
+      this.$socket.emit('toggleDrinkOrderHold', this.item.id, (res) => {
+        if (res.error) {
+          this.$store.commit('setError', res.error)
+        }
+      })
     },
     
     cancelItem() {
       this.$refs.confirm.open('Cancel', 'Are you sure you want to cancel this order?', {rejectText: 'No'}).then(() => {
-        this.$store.dispatch('drinkOrders/cancel', this.item)
+        this.$socket.emit('cancelDrinkOrder', this.item.id, (res) => {
+          if (res.error) {
+            this.$store.commit('setError', res.error)
+          }
+        })
       })
-      
-    },
-    
-    loadOrders() {
-      this.$store.dispatch('drinkOrders/loadWaiting')
-    },
-
-    unloadOrders() {
-      this.$store.commit('drinkOrders/destroy')
     },
     
   },

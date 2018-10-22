@@ -5,7 +5,13 @@
     <v-layout column justify-space-between fill-height>
       <v-layout column justify-center fill-height class="text-xs-center pa-3">
   
-        <div v-if="!dispenseState.state">
+        <div v-if="pumpSetup">
+          <p class="display-1">
+            Please wait...
+          </p>
+        </div>
+        
+        <div v-else-if="!dispenseState.state">
           <p class="display-1">
             Waiting for a drink order
           </p>
@@ -178,6 +184,7 @@ export default {
       pumps: 'pumps/sortedItems',
     }),
     ...mapState([
+      'pumpSetup',
       'isConsole',
       'dispenseState',
       'glassReady',

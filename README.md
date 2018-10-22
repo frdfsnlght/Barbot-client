@@ -22,13 +22,13 @@ npm run lint
 ```
 
 ## TODO
+
 * About page
     * attribution for icons?
     * git commit hash/date
     * vue build date
     * copyright notice
     
-* refactor code
 * test console/non-console behavior
 
 * change fonts to fonts-awesome svg?

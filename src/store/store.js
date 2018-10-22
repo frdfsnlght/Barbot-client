@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+
 import wifi from './modules/wifi'
 import drinkOrders from './modules/drinkOrders'
 import glasses from './modules/glasses'
@@ -36,6 +37,7 @@ export default new Vuex.Store({
         pumpSetup: false,
         glassReady: true,
         parentalLock: false,
+        volume: 1,
         user: {},
     },
     
@@ -49,7 +51,8 @@ export default new Vuex.Store({
         
         socket_clientOptions(state, options) {
             state.options = options
-            console.dir(options)
+            //console.log('clientOptions:')
+            //console.dir(options)
             if (! options.autoConsole) {
                 if (options.isConsole !== state.isConsole) {
                     state.isConsole = options.isConsole
@@ -63,8 +66,8 @@ export default new Vuex.Store({
         },
     
         socket_dispenseState(state, dispenseState) {
-            console.log('dispenseState:')
-            console.dir(dispenseState)
+            //console.log('dispenseState:')
+            //console.dir(dispenseState)
             state.dispenseState = dispenseState
         },
     
@@ -78,6 +81,10 @@ export default new Vuex.Store({
 
         socket_parentalLock(state, parentalLock) {
             state.parentalLock = parentalLock
+        },
+
+        socket_volume(state, volume) {
+            state.volume = volume
         },
 
 
@@ -113,42 +120,6 @@ export default new Vuex.Store({
     
     actions: {
         
-        // TODO: move all these to where they're used
-        
-        toggleDispenserHold({commit}) {
-            Vue.prototype.$socket.emit('toggleDispenserHold', (res) => {
-                if (res.error) {
-                    commit('setError', res.error)
-                }
-            })
-        },
-
-        startPumpSetup({commit}) {
-            Vue.prototype.$socket.emit('startPumpSetup', (res) => {
-                if (res.error) {
-                    commit('setError', res.error)
-                }
-            })
-        },
-
-        stopPumpSetup({commit}) {
-            Vue.prototype.$socket.emit('stopPumpSetup', (res) => {
-                if (res.error) {
-                    commit('setError', res.error)
-                }
-            })
-        },
-
-
-
-        
-        /*
-        isConnected({state}) {
-            if (state.connected) return true
-            state.notConnected = true
-            return false
-        }
-        */
     }
     
 })

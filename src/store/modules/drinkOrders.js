@@ -95,24 +95,6 @@ export default {
             }
         },
 
-        /*
-        socket_drinkOrderStarted(state, item) {
-            if (state.loadedWaiting) {
-                let o = state.items.find((e) => { return e.id === item.id })
-                if (o) {
-                    let i = state.items.indexOf(o)
-                    if (i != -1) {
-                        state.items.splice(i, 1)
-                    }
-                }
-            }
-            if (state.loadedOne && state.item.id === item.id) {
-                state.item = {}
-                this.commit('showSnackbar', {text: 'Drink order started'}, {root: true})
-            }
-        },
-        */
-        
     },
     
     actions: {
@@ -140,49 +122,6 @@ export default {
                 } else {
                     commit('loadedOne', res.item)
                 }
-            })
-        },
-        
-        /*
-        submit({commit}, item) {
-            return new Promise((resolve, reject) => {
-                Vue.prototype.$socket.emit('submitDrinkOrder', item, (res) => {
-                    if (res.error) {
-                        commit('setError', res.error, {root: true})
-                        reject()
-                    } else {
-                        resolve()
-                    }
-                })
-            })
-        },
-        */
-        
-        // TODO: move these out to where they're used
-        
-        cancel({commit}, item) {
-            return new Promise((resolve, reject) => {
-                Vue.prototype.$socket.emit('cancelDrinkOrder', item.id, (res) => {
-                    if (res.error) {
-                        commit('setError', res.error, {root: true})
-                        reject()
-                    } else {
-                        resolve()
-                    }
-                })
-            })
-        },
-        
-        toggleHold({commit}, item) {
-            return new Promise((resolve, reject) => {
-                Vue.prototype.$socket.emit('toggleDrinkOrderHold', item.id, (res) => {
-                    if (res.error) {
-                        commit('setError', res.error, {root: true})
-                        reject()
-                    } else {
-                        resolve()
-                    }
-                })
             })
         },
         
